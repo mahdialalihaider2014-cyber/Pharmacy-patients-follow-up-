@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+    <title>متابعة مرضى الصيدلية</title>
+    <link rel="stylesheet"
+          href="style.css">
+</head>
+<body>
+    <header class="header">
+        <h1>🏥 متابعة مرضى الصيدلية</h1>
+        <p>
+            نظام متابعة المرضى والأدوية
+        </p>
+    </header>
+    <main class="container">
+        <!-- لوحة الإحصائيات -->
+        <section class="stats">
+            <div class="stat-card">
+                <span>👥</span>
+                <h3>المرضى</h3>
+                <strong id="patientsCount">0</strong>
+            </div>
+            <div class="stat-card">
+                <span>💊</span>
+                <h3>الأدوية</h3>
+                <strong id="medicinesCount">0</strong>
+            </div>
+            <div class="stat-card">
+                <span>📅</span>
+                <h3>متابعات اليوم</h3>
+                <strong id="followUpCount">0</strong>
+            </div>
+        </section>
+        <!-- إضافة مريض -->
+        <section class="card">
+            <h2>➕ إضافة مريض</h2>
+            <form id="patientForm">
+                <label>
+                    اسم المريض
+                </label>
+                <input
+                    type="text"
+                    id="name"
+                    placeholder="أدخل اسم المريض"
+                    required
+                >
+                <label>
+                    رقم الهاتف
+                </label>
+                <input
+                    type="tel"
+                    id="phone"
+                    placeholder="07xxxxxxxxx"
+                    required
+                >
+                <label>
+                    تاريخ الميلاد
+                </label>
+                <input
+                    type="date"
+                    id="birthDate"
+                >
+                <label>
+                    ملاحظات
+                </label>
+                <textarea
+                    id="notes"
+                    placeholder="ملاحظات عن المريض"
+                ></textarea>
+                <button
+                    type="submit"
+                    id="saveButton">
+                    💾 حفظ المريض
+                </button>
+            </form>
+            <div id="message"></div>
+        </section>
+    </main>
+    <script src="app.js"></script>
+</body>
+</html>

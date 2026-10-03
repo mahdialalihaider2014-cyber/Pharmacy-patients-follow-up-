@@ -1,84 +1,109 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
+
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport"
-          content="width=device-width, initial-scale=1.0">
-    <title>متابعة مرضى الصيدلية</title>
-    <link rel="stylesheet"
-          href="style.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>نظام متابعة المرضى</title>
+
+    <link rel="stylesheet" href="css/style.css">
+
+    <!-- Barcode -->
+    <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.6/dist/JsBarcode.all.min.js"></script>
+
+    <!-- QR / Barcode Scanner -->
+    <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
 </head>
+
 <body>
-    <header class="header">
-        <h1>🏥 متابعة مرضى الصيدلية</h1>
-        <p>
-            نظام متابعة المرضى والأدوية
-        </p>
-    </header>
-    <main class="container">
-        <!-- لوحة الإحصائيات -->
-        <section class="stats">
-            <div class="stat-card">
-                <span>👥</span>
-                <h3>المرضى</h3>
-                <strong id="patientsCount">0</strong>
-            </div>
-            <div class="stat-card">
-                <span>💊</span>
-                <h3>الأدوية</h3>
-                <strong id="medicinesCount">0</strong>
-            </div>
-            <div class="stat-card">
-                <span>📅</span>
-                <h3>متابعات اليوم</h3>
-                <strong id="followUpCount">0</strong>
-            </div>
-        </section>
-        <!-- إضافة مريض -->
-        <section class="card">
-            <h2>➕ إضافة مريض</h2>
-            <form id="patientForm">
-                <label>
-                    اسم المريض
-                </label>
-                <input
-                    type="text"
-                    id="name"
-                    placeholder="أدخل اسم المريض"
-                    required
-                >
-                <label>
-                    رقم الهاتف
-                </label>
-                <input
-                    type="tel"
-                    id="phone"
-                    placeholder="07xxxxxxxxx"
-                    required
-                >
-                <label>
-                    تاريخ الميلاد
-                </label>
-                <input
-                    type="date"
-                    id="birthDate"
-                >
-                <label>
-                    ملاحظات
-                </label>
-                <textarea
-                    id="notes"
-                    placeholder="ملاحظات عن المريض"
-                ></textarea>
-                <button
-                    type="submit"
-                    id="saveButton">
-                    💾 حفظ المريض
-                </button>
-            </form>
-            <div id="message"></div>
-        </section>
-    </main>
-    <script src="app.js"></script>
+
+<header class="header">
+    <h1>💊 نظام متابعة مرضى الصيدلية</h1>
+</header>
+
+<main class="container">
+
+    <!-- إضافة مريض -->
+    <section class="card">
+
+        <h2>إضافة مريض جديد</h2>
+
+        <input
+            type="text"
+            id="patientName"
+            placeholder="اسم المريض"
+        >
+
+        <input
+            type="tel"
+            id="patientPhone"
+            placeholder="رقم الهاتف"
+        >
+
+        <input
+            type="date"
+            id="patientBirthDate"
+        >
+
+        <textarea
+            id="patientNotes"
+            placeholder="ملاحظات"
+        ></textarea>
+
+        <button onclick="addPatient()">
+            ➕ إضافة المريض
+        </button>
+
+    </section>
+
+
+    <!-- البحث -->
+    <section class="card">
+
+        <h2>🔎 البحث عن مريض</h2>
+
+        <input
+            type="text"
+            id="searchInput"
+            placeholder="اكتب الاسم أو رقم الهاتف أو الباركود"
+            oninput="searchPatients()"
+        >
+
+        <button onclick="startScanner()">
+            📷 مسح الباركود
+        </button>
+
+        <div id="reader"></div>
+
+        <div id="searchResults"></div>
+
+    </section>
+
+
+    <!-- طباعة الباركود -->
+    <section
+        class="card"
+        id="barcodeSection"
+        style="display:none;"
+    >
+
+        <h2>باركود المريض</h2>
+
+        <p id="barcodePatientName"></p>
+
+        <svg id="barcode"></svg>
+
+        <button onclick="printBarcode()">
+            🖨️ طباعة الباركود
+        </button>
+
+    </section>
+
+</main>
+
+
+<script src="js/app.js"></script>
+
 </body>
 </html>

@@ -1,0 +1,1347 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>ملف المريض</title>
+
+    <link
+        rel="stylesheet"
+        href="style.css"
+    >
+
+    <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.6/dist/JsBarcode.all.min.js"></script>
+
+</head>
+
+
+<body>
+
+
+<!-- =========================
+     الهيدر
+========================= -->
+
+<header class="header">
+
+    <div class="header-content">
+
+        <div class="logo">
+            💊
+        </div>
+
+        <div>
+
+            <h1>
+                ملف المريض
+            </h1>
+
+            <p>
+                متابعة بيانات وأدوية المريض
+            </p>
+
+        </div>
+
+    </div>
+
+</header>
+
+
+
+<main class="container">
+
+
+    <!-- =========================
+         زر الرجوع
+    ========================= -->
+
+    <button
+        class="primary-button"
+        onclick="goBack()"
+    >
+
+        ← العودة إلى المرضى
+
+    </button>
+
+
+
+    <!-- =========================
+         معلومات المريض
+    ========================= -->
+
+    <section class="card">
+
+        <div class="section-title">
+
+            <span class="icon">
+                👤
+            </span>
+
+            <div>
+
+                <h2>
+                    معلومات المريض
+                </h2>
+
+                <p>
+                    بيانات المريض الأساسية
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <div class="form-grid">
+
+
+            <div class="input-group">
+
+                <label>
+                    رقم المريض
+                </label>
+
+                <input
+                    id="patientID"
+                    type="text"
+                    readonly
+                >
+
+            </div>
+
+
+            <div class="input-group">
+
+                <label>
+                    اسم المريض
+                </label>
+
+                <input
+                    id="patientName"
+                    type="text"
+                >
+
+            </div>
+
+
+            <div class="input-group">
+
+                <label>
+                    رقم الهاتف
+                </label>
+
+                <input
+                    id="patientPhone"
+                    type="tel"
+                >
+
+            </div>
+
+
+            <div class="input-group">
+
+                <label>
+                    تاريخ الميلاد
+                </label>
+
+                <input
+                    id="patientBirthDate"
+                    type="date"
+                >
+
+            </div>
+
+
+            <div class="input-group full">
+
+                <label>
+                    الملاحظات
+                </label>
+
+                <textarea
+                    id="patientNotes"
+                ></textarea>
+
+            </div>
+
+
+        </div>
+
+
+        <button
+            class="primary-button"
+            onclick="updatePatient()"
+        >
+
+            💾 حفظ تعديلات المريض
+
+        </button>
+
+    </section>
+
+
+
+    <!-- =========================
+         باركود المريض
+    ========================= -->
+
+    <section class="card barcode-card">
+
+        <div class="section-title">
+
+            <span class="icon">
+                ▣
+            </span>
+
+            <div>
+
+                <h2>
+                    باركود المريض
+                </h2>
+
+                <p>
+                    يمكن استخدامه للبحث السريع
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <div class="barcode-container">
+
+            <svg id="patientBarcode"></svg>
+
+        </div>
+
+
+        <button
+            class="primary-button"
+            onclick="printBarcode()"
+        >
+
+            🖨️ طباعة الباركود
+
+        </button>
+
+    </section>
+
+
+
+    <!-- =========================
+         إضافة دواء
+    ========================= -->
+
+    <section class="card">
+
+        <div class="section-title">
+
+            <span class="icon">
+                💊
+            </span>
+
+            <div>
+
+                <h2>
+                    إضافة دواء
+                </h2>
+
+                <p>
+                    تسجيل الدواء وموعد المتابعة
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <div class="form-grid">
+
+
+            <div class="input-group">
+
+                <label>
+                    اسم الدواء
+                </label>
+
+                <input
+                    id="medicineName"
+                    type="text"
+                    placeholder="مثال: Metformin"
+                >
+
+            </div>
+
+
+            <div class="input-group">
+
+                <label>
+                    الجرعة
+                </label>
+
+                <input
+                    id="medicineDose"
+                    type="text"
+                    placeholder="مثال: 500 mg"
+                >
+
+            </div>
+
+
+            <div class="input-group">
+
+                <label>
+                    عدد مرات الاستخدام يومياً
+                </label>
+
+                <input
+                    id="medicineTimes"
+                    type="number"
+                    min="1"
+                    placeholder="مثال: 2"
+                >
+
+            </div>
+
+
+            <div class="input-group">
+
+                <label>
+                    الكمية
+                </label>
+
+                <input
+                    id="medicineQuantity"
+                    type="number"
+                    min="1"
+                    placeholder="مثال: 60"
+                >
+
+            </div>
+
+
+            <div class="input-group">
+
+                <label>
+                    تاريخ صرف الدواء
+                </label>
+
+                <input
+                    id="dispenseDate"
+                    type="date"
+                >
+
+            </div>
+
+
+            <div class="input-group">
+
+                <label>
+                    عدد أيام العلاج
+                </label>
+
+                <input
+                    id="medicineDays"
+                    type="number"
+                    min="1"
+                    placeholder="مثال: 30"
+                    oninput="calculateFollowUp()"
+                >
+
+            </div>
+
+
+            <div class="input-group full">
+
+                <label>
+                    موعد المتابعة المتوقع
+                </label>
+
+                <input
+                    id="followUpDate"
+                    type="date"
+                    readonly
+                >
+
+            </div>
+
+
+        </div>
+
+
+        <button
+            class="primary-button"
+            onclick="addMedicine()"
+        >
+
+            ➕ إضافة الدواء
+
+        </button>
+
+    </section>
+
+
+
+    <!-- =========================
+         قائمة الأدوية
+    ========================= -->
+
+    <section class="card">
+
+        <div class="section-title">
+
+            <span class="icon">
+                📋
+            </span>
+
+            <div>
+
+                <h2>
+                    أدوية المريض
+                </h2>
+
+                <p>
+                    جميع الأدوية المسجلة لهذا المريض
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <div id="medicinesList">
+
+            <div class="no-result">
+                جارٍ تحميل الأدوية...
+            </div>
+
+        </div>
+
+    </section>
+
+
+</main>
+
+
+
+<script>
+
+/* ========================================
+   رابط Google Apps Script
+======================================== */
+
+const API_URL =
+"https://script.google.com/macros/s/AKfycbxpciZPGC7wvRK-0hAYiZP1PETQh4m5hnWtgHGvC56roAOtCPcGCR_pWhhek2iSfKB/exec";
+
+
+/* ========================================
+   رقم المريض من الرابط
+======================================== */
+
+const urlParams =
+    new URLSearchParams(
+        window.location.search
+    );
+
+
+const patientID =
+    urlParams.get("id");
+
+
+/* ========================================
+   عند فتح الصفحة
+======================================== */
+
+document.addEventListener(
+    "DOMContentLoaded",
+    function () {
+
+        if (!patientID) {
+
+            alert(
+                "لم يتم تحديد رقم المريض"
+            );
+
+            return;
+
+        }
+
+
+        loadPatient();
+
+        loadMedicines();
+
+        setToday();
+
+    }
+);
+
+
+/* ========================================
+   تحميل بيانات المريض
+======================================== */
+
+async function loadPatient() {
+
+    try {
+
+        const response =
+            await fetch(
+                API_URL +
+                "?action=patient&id=" +
+                encodeURIComponent(
+                    patientID
+                )
+            );
+
+
+        const data =
+            await response.json();
+
+
+        if (!data.success) {
+
+            alert(
+                data.message ||
+                "لم يتم العثور على المريض"
+            );
+
+            return;
+
+        }
+
+
+        const patient =
+            data.patient;
+
+
+        document.getElementById(
+            "patientID"
+        ).value =
+            patient.ID || "";
+
+
+        document.getElementById(
+            "patientName"
+        ).value =
+            patient.Name || "";
+
+
+        document.getElementById(
+            "patientPhone"
+        ).value =
+            patient.Phone || "";
+
+
+        document.getElementById(
+            "patientBirthDate"
+        ).value =
+            formatDateForInput(
+                patient.BirthDate
+            );
+
+
+        document.getElementById(
+            "patientNotes"
+        ).value =
+            patient.Notes || "";
+
+
+        /*
+        إنشاء الباركود
+        */
+
+        JsBarcode(
+            "#patientBarcode",
+            String(patient.ID),
+            {
+                format: "CODE128",
+                width: 2,
+                height: 80,
+                displayValue: true,
+                fontSize: 18,
+                margin: 10
+            }
+        );
+
+
+        document.title =
+            "ملف المريض - " +
+            patient.Name;
+
+
+    } catch (error) {
+
+        console.error(error);
+
+        alert(
+            "حدث خطأ أثناء تحميل بيانات المريض"
+        );
+
+    }
+
+}
+
+
+/* ========================================
+   تعديل بيانات المريض
+======================================== */
+
+async function updatePatient() {
+
+
+    const name =
+        document.getElementById(
+            "patientName"
+        ).value.trim();
+
+
+    const phone =
+        document.getElementById(
+            "patientPhone"
+        ).value.trim();
+
+
+    const birthDate =
+        document.getElementById(
+            "patientBirthDate"
+        ).value;
+
+
+    const notes =
+        document.getElementById(
+            "patientNotes"
+        ).value.trim();
+
+
+    if (!name) {
+
+        alert(
+            "يرجى إدخال اسم المريض"
+        );
+
+        return;
+
+    }
+
+
+    try {
+
+        const response =
+            await fetch(
+                API_URL,
+                {
+                    method: "POST",
+
+                    body: JSON.stringify({
+
+                        action:
+                            "updatePatient",
+
+                        id:
+                            patientID,
+
+                        name:
+                            name,
+
+                        phone:
+                            phone,
+
+                        birthDate:
+                            birthDate,
+
+                        notes:
+                            notes
+
+                    })
+                }
+            );
+
+
+        const data =
+            await response.json();
+
+
+        if (!data.success) {
+
+            alert(
+                data.message ||
+                "لم يتم حفظ التعديلات"
+            );
+
+            return;
+
+        }
+
+
+        alert(
+            "✅ تم حفظ بيانات المريض بنجاح"
+        );
+
+
+    } catch (error) {
+
+        console.error(error);
+
+        alert(
+            "حدث خطأ أثناء حفظ البيانات"
+        );
+
+    }
+
+}
+
+
+/* ========================================
+   تاريخ اليوم
+======================================== */
+
+function setToday() {
+
+    const today =
+        new Date();
+
+
+    const date =
+        today.getFullYear() +
+        "-" +
+        String(
+            today.getMonth() + 1
+        ).padStart(2, "0") +
+        "-" +
+        String(
+            today.getDate()
+        ).padStart(2, "0");
+
+
+    document.getElementById(
+        "dispenseDate"
+    ).value =
+        date;
+
+}
+
+
+/* ========================================
+   حساب موعد المتابعة
+======================================== */
+
+function calculateFollowUp() {
+
+
+    const dispenseDate =
+        document.getElementById(
+            "dispenseDate"
+        ).value;
+
+
+    const days =
+        Number(
+            document.getElementById(
+                "medicineDays"
+            ).value
+        );
+
+
+    if (!dispenseDate || !days) {
+
+        document.getElementById(
+            "followUpDate"
+        ).value = "";
+
+        return;
+
+    }
+
+
+    const date =
+        new Date(
+            dispenseDate +
+            "T00:00:00"
+        );
+
+
+    date.setDate(
+        date.getDate() +
+        days
+    );
+
+
+    const result =
+        date.getFullYear() +
+        "-" +
+        String(
+            date.getMonth() + 1
+        ).padStart(2, "0") +
+        "-" +
+        String(
+            date.getDate()
+        ).padStart(2, "0");
+
+
+    document.getElementById(
+        "followUpDate"
+    ).value =
+        result;
+
+}
+
+
+/* ========================================
+   إضافة دواء
+======================================== */
+
+async function addMedicine() {
+
+
+    const medicineName =
+        document.getElementById(
+            "medicineName"
+        ).value.trim();
+
+
+    const dose =
+        document.getElementById(
+            "medicineDose"
+        ).value.trim();
+
+
+    const timesPerDay =
+        document.getElementById(
+            "medicineTimes"
+        ).value;
+
+
+    const quantity =
+        document.getElementById(
+            "medicineQuantity"
+        ).value;
+
+
+    const dispenseDate =
+        document.getElementById(
+            "dispenseDate"
+        ).value;
+
+
+    const days =
+        document.getElementById(
+            "medicineDays"
+        ).value;
+
+
+    if (!medicineName) {
+
+        alert(
+            "يرجى إدخال اسم الدواء"
+        );
+
+        return;
+
+    }
+
+
+    try {
+
+        const response =
+            await fetch(
+                API_URL,
+                {
+                    method: "POST",
+
+                    body: JSON.stringify({
+
+                        action:
+                            "addMedicine",
+
+                        patientId:
+                            patientID,
+
+                        medicineName:
+                            medicineName,
+
+                        dose:
+                            dose,
+
+                        timesPerDay:
+                            timesPerDay,
+
+                        quantity:
+                            quantity,
+
+                        dispenseDate:
+                            dispenseDate,
+
+                        days:
+                            days
+
+                    })
+                }
+            );
+
+
+        const data =
+            await response.json();
+
+
+        if (!data.success) {
+
+            alert(
+                data.message ||
+                "لم تتم إضافة الدواء"
+            );
+
+            return;
+
+        }
+
+
+        alert(
+            "✅ تمت إضافة الدواء بنجاح"
+        );
+
+
+        /*
+        تنظيف الحقول
+        */
+
+        document.getElementById(
+            "medicineName"
+        ).value = "";
+
+
+        document.getElementById(
+            "medicineDose"
+        ).value = "";
+
+
+        document.getElementById(
+            "medicineTimes"
+        ).value = "";
+
+
+        document.getElementById(
+            "medicineQuantity"
+        ).value = "";
+
+
+        document.getElementById(
+            "medicineDays"
+        ).value = "";
+
+
+        document.getElementById(
+            "followUpDate"
+        ).value = "";
+
+
+        /*
+        تحديث قائمة الأدوية
+        */
+
+        loadMedicines();
+
+
+    } catch (error) {
+
+        console.error(error);
+
+        alert(
+            "حدث خطأ أثناء إضافة الدواء"
+        );
+
+    }
+
+}
+
+
+/* ========================================
+   تحميل الأدوية
+======================================== */
+
+async function loadMedicines() {
+
+
+    const container =
+        document.getElementById(
+            "medicinesList"
+        );
+
+
+    try {
+
+        const response =
+            await fetch(
+                API_URL +
+                "?action=medicines&patientId=" +
+                encodeURIComponent(
+                    patientID
+                )
+            );
+
+
+        const medicines =
+            await response.json();
+
+
+        if (!Array.isArray(medicines)) {
+
+            container.innerHTML = `
+
+                <div class="no-result">
+
+                    لا توجد أدوية مسجلة
+
+                </div>
+
+            `;
+
+            return;
+
+        }
+
+
+        if (medicines.length === 0) {
+
+            container.innerHTML = `
+
+                <div class="no-result">
+
+                    💊 لا توجد أدوية مسجلة لهذا المريض
+
+                </div>
+
+            `;
+
+            return;
+
+        }
+
+
+        container.innerHTML =
+            medicines.map(
+                function (medicine) {
+
+                    return `
+
+                        <div class="patient-result">
+
+                            <div class="patient-info">
+
+                                <strong>
+                                    💊
+                                    ${escapeHTML(
+                                        medicine.MedicineName
+                                    )}
+                                </strong>
+
+                                <p>
+                                    الجرعة:
+                                    ${escapeHTML(
+                                        medicine.Dose ||
+                                        "غير محددة"
+                                    )}
+                                </p>
+
+                                <p>
+                                    عدد المرات:
+                                    ${escapeHTML(
+                                        medicine.TimesPerDay ||
+                                        "غير محدد"
+                                    )}
+                                    يومياً
+                                </p>
+
+                                <p>
+                                    الكمية:
+                                    ${escapeHTML(
+                                        medicine.Quantity ||
+                                        "غير محددة"
+                                    )}
+                                </p>
+
+                                <p>
+                                    موعد المتابعة:
+                                    ${formatDate(
+                                        medicine.FollowUpDate
+                                    )}
+                                </p>
+
+                            </div>
+
+                        </div>
+
+                    `;
+
+                }
+            )
+            .join("");
+
+
+    } catch (error) {
+
+        console.error(error);
+
+        container.innerHTML = `
+
+            <div class="no-result">
+
+                ❌ تعذر تحميل الأدوية
+
+            </div>
+
+        `;
+
+    }
+
+}
+
+
+/* ========================================
+   طباعة الباركود
+======================================== */
+
+function printBarcode() {
+
+
+    const barcode =
+        document.getElementById(
+            "patientBarcode"
+        ).outerHTML;
+
+
+    const name =
+        document.getElementById(
+            "patientName"
+        ).value;
+
+
+    const id =
+        document.getElementById(
+            "patientID"
+        ).value;
+
+
+    const printWindow =
+        window.open(
+            "",
+            "_blank"
+        );
+
+
+    printWindow.document.write(`
+
+        <!DOCTYPE html>
+
+        <html
+            lang="ar"
+            dir="rtl"
+        >
+
+        <head>
+
+            <meta charset="UTF-8">
+
+            <title>
+                باركود المريض
+            </title>
+
+            <style>
+
+                body {
+
+                    text-align: center;
+
+                    font-family: Arial;
+
+                    padding: 30px;
+
+                }
+
+                svg {
+
+                    max-width: 350px;
+
+                }
+
+            </style>
+
+        </head>
+
+        <body>
+
+            <h2>
+                ${escapeHTML(name)}
+            </h2>
+
+            <p>
+                رقم المريض:
+                ${escapeHTML(id)}
+            </p>
+
+            ${barcode}
+
+            <script>
+
+                window.onload =
+                function () {
+
+                    window.print();
+
+                };
+
+            <\/script>
+
+        </body>
+
+        </html>
+
+    `);
+
+
+    printWindow.document.close();
+
+}
+
+
+/* ========================================
+   العودة
+======================================== */
+
+function goBack() {
+
+    window.location.href =
+        "index.html";
+
+}
+
+
+/* ========================================
+   تنسيق التاريخ لحقل HTML
+======================================== */
+
+function formatDateForInput(value) {
+
+    if (!value) {
+
+        return "";
+
+    }
+
+
+    const date =
+        new Date(value);
+
+
+    if (isNaN(date.getTime())) {
+
+        return "";
+
+    }
+
+
+    return (
+        date.getFullYear() +
+        "-" +
+        String(
+            date.getMonth() + 1
+        ).padStart(2, "0") +
+        "-" +
+        String(
+            date.getDate()
+        ).padStart(2, "0")
+    );
+
+}
+
+
+/* ========================================
+   تنسيق التاريخ للعرض
+======================================== */
+
+function formatDate(value) {
+
+    if (!value) {
+
+        return "غير محدد";
+
+    }
+
+
+    const date =
+        new Date(value);
+
+
+    if (isNaN(date.getTime())) {
+
+        return "غير محدد";
+
+    }
+
+
+    return (
+        String(
+            date.getDate()
+        ).padStart(2, "0") +
+        "/" +
+        String(
+            date.getMonth() + 1
+        ).padStart(2, "0") +
+        "/" +
+        date.getFullYear()
+    );
+
+}
+
+
+/* ========================================
+   حماية HTML
+======================================== */
+
+function escapeHTML(value) {
+
+    return String(
+        value || ""
+    )
+
+    .replace(
+        /&/g,
+        "&amp;"
+    )
+
+    .replace(
+        /</g,
+        "&lt;"
+    )
+
+    .replace(
+        />/g,
+        "&gt;"
+    )
+
+    .replace(
+        /"/g,
+        "&quot;"
+    )
+
+    .replace(
+        /'/g,
+        "&#039;"
+    );
+
+}
+
+</script>
+
+
+</body>
+
+</html>

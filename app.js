@@ -3,18 +3,9 @@
    app.js
 ===================================================== */
 
-
-/* =====================================================
-   رابط Google Apps Script الجديد
-===================================================== */
-
 const API_URL =
 "https://script.google.com/macros/s/AKfycbzkvBi5jiox12ObEG8RKoWgJM3hJrp1djQQpeopzKkrTmPAZvqdZUoUzT82etTZ11UG/exec";
 
-
-/* =====================================================
-   متغيرات عامة
-===================================================== */
 
 let allPatients = [];
 let scanner = null;
@@ -28,83 +19,25 @@ document.addEventListener("DOMContentLoaded", function () {
 
     loadPatients();
 
-    const searchInput =
-        document.getElementById("searchInput");
-
-    if (searchInput) {
-
-        searchInput.addEventListener(
-            "input",
-            searchPatients
-        );
-
-    }
-
 });
 
 
 /* =====================================================
-   جلب المرضى من Google Sheets
+   جلب المرضى
 ===================================================== */
 
 async function loadPatients() {
 
     try {
 
-        const url =
-            API_URL +
-            "?action=patients&_=" +
-            Date.now();
-
-
-        const response =
-            await fetch(url, {
-                method: "GET",
-                cache: "no-store"
-            });
-
-
-        if (!response.ok) {
-
-            throw new Error(
-                "HTTP Error: " +
-                response.status
-            );
-
-        }
-
-
-        const data =
-            await response.json();
-
-
-        console.log(
-            "بيانات المرضى:",
-            data
+        const response = await fetch(
+            API_URL + "?action=patients"
         );
 
+        const data = await response.json();
 
-        /*
-         إذا كان Google Apps Script
-         أرسل رسالة خطأ
-        */
+        console.log("بيانات المرضى:", data);
 
-        if (
-            data &&
-            data.success === false
-        ) {
-
-            throw new Error(
-                data.message ||
-                "خطأ في قاعدة البيانات"
-            );
-
-        }
-
-
-        /*
-         البيانات الصحيحة يجب أن تكون Array
-        */
 
         if (Array.isArray(data)) {
 
@@ -130,26 +63,18 @@ async function loadPatients() {
 
         const container =
             document.getElementById(
-                "patientsList"
+                "searchResults"
             );
 
 
         if (container) {
 
             container.innerHTML = `
-
                 <div class="no-result">
-
-                    ❌ تعذر الاتصال بقاعدة بيانات المرضى.
-
-                    <br><br>
-
-                    <small>
-                    تأكد من إعداد Google Apps Script.
-                    </small>
-
+                    ❌ تعذر تحميل بيانات المرضى.
+                    <br>
+                    تأكد من اتصال الإنترنت.
                 </div>
-
             `;
 
         }
@@ -160,7 +85,7 @@ async function loadPatients() {
 
 
 /* =====================================================
-   إضافة مريض جديد
+   إضافة مريض
 ===================================================== */
 
 async function addPatient() {
@@ -178,7 +103,7 @@ async function addPatient() {
         );
 
 
-    const birthDateElement =
+    const birthElement =
         document.getElementById(
             "patientBirthDate"
         );
@@ -203,8 +128,8 @@ async function addPatient() {
 
 
     const birthDate =
-        birthDateElement
-            ? birthDateElement.value
+        birthElement
+            ? birthElement.value
             : "";
 
 
@@ -214,7 +139,9 @@ async function addPatient() {
             : "";
 
 
-    /* التحقق من الاسم */
+    /* ---------------------------------------------
+       التحقق من البيانات
+    --------------------------------------------- */
 
     if (!name) {
 
@@ -226,8 +153,6 @@ async function addPatient() {
 
     }
 
-
-    /* التحقق من الهاتف */
 
     if (!phone) {
 
@@ -243,55 +168,27 @@ async function addPatient() {
     try {
 
 
-        /*
-         بناء رابط الإضافة
-        */
-
         const url =
             API_URL +
-
             "?action=addPatient" +
-
             "&name=" +
             encodeURIComponent(name) +
-
             "&phone=" +
             encodeURIComponent(phone) +
-
             "&birthDate=" +
             encodeURIComponent(birthDate) +
-
             "&notes=" +
-            encodeURIComponent(notes) +
-
-            "&_=" +
-            Date.now();
+            encodeURIComponent(notes);
 
 
         console.log(
-            "رابط إضافة المريض:",
+            "رابط الإضافة:",
             url
         );
 
 
         const response =
-            await fetch(url, {
-
-                method: "GET",
-
-                cache: "no-store"
-
-            });
-
-
-        if (!response.ok) {
-
-            throw new Error(
-                "HTTP Error: " +
-                response.status
-            );
-
-        }
+            await fetch(url);
 
 
         const data =
@@ -304,12 +201,7 @@ async function addPatient() {
         );
 
 
-        /* إذا فشل الإضافة */
-
-        if (
-            !data ||
-            data.success !== true
-        ) {
+        if (!data.success) {
 
             alert(
                 "❌ " +
@@ -324,14 +216,20 @@ async function addPatient() {
         }
 
 
-        /* نجاح */
+        /* ---------------------------------------------
+           نجاح الإضافة
+        --------------------------------------------- */
 
         alert(
-            "✅ تمت إضافة المريض بنجاح"
+            "✅ تمت إضافة المريض بنجاح\n\n" +
+            "رقم المريض: " +
+            data.id
         );
 
 
-        /* تنظيف الحقول */
+        /* ---------------------------------------------
+           مسح الحقول
+        --------------------------------------------- */
 
         if (nameElement) {
 
@@ -347,9 +245,9 @@ async function addPatient() {
         }
 
 
-        if (birthDateElement) {
+        if (birthElement) {
 
-            birthDateElement.value = "";
+            birthElement.value = "";
 
         }
 
@@ -361,13 +259,34 @@ async function addPatient() {
         }
 
 
-        /* إعادة تحميل المرضى */
+        /* ---------------------------------------------
+           إعادة تحميل المرضى
+        --------------------------------------------- */
 
         await loadPatients();
 
 
-    } catch (error) {
+        /* ---------------------------------------------
+           البحث عن المريض الجديد
+        --------------------------------------------- */
 
+        const searchInput =
+            document.getElementById(
+                "searchInput"
+            );
+
+
+        if (searchInput) {
+
+            searchInput.value =
+                data.id;
+
+            searchPatients();
+
+        }
+
+
+    } catch (error) {
 
         console.error(
             "خطأ إضافة المريض:",
@@ -385,8 +304,7 @@ async function addPatient() {
 
 
 /* =====================================================
-   البحث عن المريض
-   بالاسم أو الهاتف أو رقم المريض أو الباركود
+   البحث عن مريض
 ===================================================== */
 
 function searchPatients() {
@@ -411,7 +329,9 @@ function searchPatients() {
             .toLowerCase();
 
 
-    /* إذا كان البحث فارغًا */
+    /* ---------------------------------------------
+       إذا كان البحث فارغًا
+    --------------------------------------------- */
 
     if (!value) {
 
@@ -423,6 +343,10 @@ function searchPatients() {
 
     }
 
+
+    /* ---------------------------------------------
+       البحث بالاسم أو الهاتف أو ID
+    --------------------------------------------- */
 
     const results =
         allPatients.filter(
@@ -475,7 +399,7 @@ function displayPatients(patients) {
 
     const container =
         document.getElementById(
-            "patientsList"
+            "searchResults"
         );
 
 
@@ -486,21 +410,15 @@ function displayPatients(patients) {
     }
 
 
-    /* لا يوجد مرضى */
-
     if (
         !patients ||
         patients.length === 0
     ) {
 
         container.innerHTML = `
-
             <div class="no-result">
-
                 🔍 لا يوجد مريض مطابق للبحث.
-
             </div>
-
         `;
 
         return;
@@ -509,26 +427,25 @@ function displayPatients(patients) {
 
 
     container.innerHTML =
-
         patients.map(
             function (patient) {
 
 
                 const id =
-                    escapeHTML(
-                        patient.ID
+                    String(
+                        patient.ID || ""
                     );
 
 
                 const name =
-                    escapeHTML(
-                        patient.Name
+                    String(
+                        patient.Name || ""
                     );
 
 
                 const phone =
-                    escapeHTML(
-                        patient.Phone
+                    String(
+                        patient.Phone || ""
                     );
 
 
@@ -539,15 +456,18 @@ function displayPatients(patients) {
                         <div class="patient-info">
 
                             <strong>
-                                👤 ${name}
+                                👤
+                                ${escapeHTML(name)}
                             </strong>
 
                             <p>
-                                📱 ${phone}
+                                📱
+                                ${escapeHTML(phone)}
                             </p>
 
                             <p>
-                                ▣ ${id}
+                                ▣
+                                ${escapeHTML(id)}
                             </p>
 
                         </div>
@@ -555,10 +475,20 @@ function displayPatients(patients) {
 
                         <button
                             class="primary-button"
-                            onclick="openPatient('${escapeJS(patient.ID)}')"
+                            onclick="openPatient('${escapeJS(id)}')"
                         >
 
                             📂 فتح الملف
+
+                        </button>
+
+
+                        <button
+                            class="scan-button"
+                            onclick="showPatientBarcode('${escapeJS(id)}','${escapeJS(name)}')"
+                        >
+
+                            ▣ الباركود
 
                         </button>
 
@@ -594,10 +524,238 @@ function openPatient(id) {
 
 
 /* =====================================================
+   إظهار باركود المريض
+===================================================== */
+
+function showPatientBarcode(
+    id,
+    name
+) {
+
+
+    const section =
+        document.getElementById(
+            "barcodeSection"
+        );
+
+
+    const title =
+        document.getElementById(
+            "barcodePatientName"
+        );
+
+
+    const barcode =
+        document.getElementById(
+            "barcode"
+        );
+
+
+    if (
+        !section ||
+        !title ||
+        !barcode
+    ) {
+
+        return;
+
+    }
+
+
+    section.style.display =
+        "block";
+
+
+    title.textContent =
+        name +
+        " - " +
+        id;
+
+
+    if (
+        typeof JsBarcode ===
+        "undefined"
+    ) {
+
+        alert(
+            "مكتبة الباركود لم يتم تحميلها."
+        );
+
+        return;
+
+    }
+
+
+    JsBarcode(
+        barcode,
+        id,
+        {
+
+            format: "CODE128",
+
+            displayValue: true,
+
+            fontSize: 18,
+
+            height: 80,
+
+            margin: 20
+
+        }
+    );
+
+
+    section.scrollIntoView({
+        behavior: "smooth"
+    });
+
+}
+
+
+/* =====================================================
+   طباعة الباركود
+===================================================== */
+
+function printBarcode() {
+
+
+    const barcode =
+        document.getElementById(
+            "barcode"
+        );
+
+
+    const title =
+        document.getElementById(
+            "barcodePatientName"
+        );
+
+
+    if (!barcode) {
+
+        return;
+
+    }
+
+
+    const barcodeHTML =
+        barcode.outerHTML;
+
+
+    const titleText =
+        title
+            ? title.textContent
+            : "باركود المريض";
+
+
+    const printWindow =
+        window.open(
+            "",
+            "_blank"
+        );
+
+
+    if (!printWindow) {
+
+        alert(
+            "يرجى السماح بفتح نافذة الطباعة."
+        );
+
+        return;
+
+    }
+
+
+    printWindow.document.write(`
+
+        <!DOCTYPE html>
+
+        <html
+            lang="ar"
+            dir="rtl"
+        >
+
+        <head>
+
+            <meta charset="UTF-8">
+
+            <title>
+                ${escapeHTML(titleText)}
+            </title>
+
+            <style>
+
+                body {
+
+                    font-family:
+                        Arial,
+                        sans-serif;
+
+                    text-align:
+                        center;
+
+                    padding:
+                        40px;
+
+                }
+
+                svg {
+
+                    max-width:
+                        100%;
+
+                    height:
+                        auto;
+
+                }
+
+                h2 {
+
+                    margin-bottom:
+                        30px;
+
+                }
+
+            </style>
+
+        </head>
+
+        <body>
+
+            <h2>
+                ${escapeHTML(titleText)}
+            </h2>
+
+            ${barcodeHTML}
+
+            <script>
+
+                window.onload =
+                    function () {
+
+                        window.print();
+
+                    };
+
+            <\/script>
+
+        </body>
+
+        </html>
+
+    `);
+
+
+    printWindow.document.close();
+
+}
+
+
+/* =====================================================
    تشغيل قارئ الباركود
 ===================================================== */
 
-function startBarcodeScanner() {
+function startScanner() {
 
 
     const reader =
@@ -623,8 +781,19 @@ function startBarcodeScanner() {
     ) {
 
         alert(
-            "قارئ الباركود غير محمل."
+            "قارئ الباركود لم يتم تحميله."
         );
+
+        return;
+
+    }
+
+
+    /* ---------------------------------------------
+       منع تشغيل قارئين في نفس الوقت
+    --------------------------------------------- */
+
+    if (scanner) {
 
         return;
 
@@ -648,25 +817,34 @@ function startBarcodeScanner() {
             fps: 10,
 
             qrbox: {
+
                 width: 250,
+
                 height: 120
+
             }
 
         },
 
 
-        function (decodedText) {
+        function(decodedText) {
 
 
-            const search =
+            console.log(
+                "Barcode:",
+                decodedText
+            );
+
+
+            const searchInput =
                 document.getElementById(
                     "searchInput"
                 );
 
 
-            if (search) {
+            if (searchInput) {
 
-                search.value =
+                searchInput.value =
                     decodedText;
 
             }
@@ -675,26 +853,23 @@ function startBarcodeScanner() {
             searchPatients();
 
 
-            stopBarcodeScanner();
+            stopScanner();
 
         },
 
 
-        function (errorMessage) {
+        function(errorMessage) {
 
-            /*
-             تجاهل أخطاء البحث
-             أثناء قراءة الكاميرا
-            */
+            /* تجاهل أخطاء القراءة
+               أثناء البحث عن الباركود */
 
         }
 
     ).catch(
-        function (error) {
-
+        function(error) {
 
             console.error(
-                "Barcode error:",
+                "Camera error:",
                 error
             );
 
@@ -703,6 +878,9 @@ function startBarcodeScanner() {
                 "❌ تعذر تشغيل الكاميرا.\n\n" +
                 "تأكد من السماح للموقع باستخدام الكاميرا."
             );
+
+
+            scanner = null;
 
         }
     );
@@ -714,7 +892,7 @@ function startBarcodeScanner() {
    إيقاف قارئ الباركود
 ===================================================== */
 
-function stopBarcodeScanner() {
+function stopScanner() {
 
 
     if (!scanner) {
@@ -747,7 +925,7 @@ function stopBarcodeScanner() {
 
 
 /* =====================================================
-   حماية HTML
+   تنظيف النص قبل وضعه داخل HTML
 ===================================================== */
 
 function escapeHTML(value) {
@@ -785,7 +963,7 @@ function escapeHTML(value) {
 
 
 /* =====================================================
-   حماية JavaScript
+   تنظيف النص قبل وضعه داخل onclick
 ===================================================== */
 
 function escapeJS(value) {

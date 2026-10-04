@@ -1,3 +1,7 @@
+/* ========================================
+   إعدادات عامة
+======================================== */
+
 * {
     box-sizing: border-box;
 }
@@ -7,35 +11,87 @@ body {
 
     margin: 0;
 
+    padding: 0;
+
     font-family:
         Arial,
+        Tahoma,
         sans-serif;
 
-    background: #f4f6f8;
+    background: #f4f7fb;
 
-    color: #222;
+    color: #1f2937;
+
+    direction: rtl;
 
 }
 
 
+/* ========================================
+   الهيدر
+======================================== */
+
 .header {
 
-    background: #1769aa;
+    background:
+        linear-gradient(
+            135deg,
+            #0f766e,
+            #0d9488
+        );
 
     color: white;
 
-    text-align: center;
+    padding: 25px 20px;
 
-    padding: 25px 15px;
+    box-shadow:
+        0 3px 12px
+        rgba(0,0,0,0.12);
+
+}
+
+
+.header-content {
+
+    max-width: 1100px;
+
+    margin: auto;
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 15px;
+
+}
+
+
+.logo {
+
+    width: 60px;
+
+    height: 60px;
+
+    background: rgba(255,255,255,0.18);
+
+    border-radius: 16px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    font-size: 32px;
 
 }
 
 
 .header h1 {
 
-    margin: 0 0 8px;
+    margin: 0 0 6px;
 
-    font-size: 26px;
+    font-size: 28px;
 
 }
 
@@ -46,103 +102,150 @@ body {
 
     opacity: 0.9;
 
+    font-size: 15px;
+
 }
 
+
+/* ========================================
+   الحاوية
+======================================== */
 
 .container {
 
-    width: 95%;
+    width: 100%;
 
-    max-width: 900px;
+    max-width: 1100px;
 
-    margin: 25px auto;
+    margin: 30px auto;
 
-}
-
-
-.stats {
-
-    display: grid;
-
-    grid-template-columns:
-        repeat(3, 1fr);
-
-    gap: 15px;
-
-    margin-bottom: 20px;
+    padding: 0 18px;
 
 }
 
 
-.stat-card {
-
-    background: white;
-
-    border-radius: 15px;
-
-    padding: 20px;
-
-    text-align: center;
-
-    box-shadow:
-        0 3px 10px rgba(0,0,0,0.08);
-
-}
-
-
-.stat-card span {
-
-    font-size: 30px;
-
-}
-
-
-.stat-card h3 {
-
-    margin: 8px 0;
-
-}
-
-
-.stat-card strong {
-
-    font-size: 25px;
-
-    color: #1769aa;
-
-}
-
+/* ========================================
+   البطاقات
+======================================== */
 
 .card {
 
     background: white;
 
+    border-radius: 18px;
+
     padding: 25px;
 
-    border-radius: 15px;
+    margin-bottom: 25px;
 
     box-shadow:
-        0 3px 10px rgba(0,0,0,0.08);
+        0 4px 20px
+        rgba(15,23,42,0.07);
+
+    border:
+        1px solid #e5e7eb;
 
 }
 
 
-.card h2 {
+/* ========================================
+   عناوين الأقسام
+======================================== */
 
-    margin-top: 0;
+.section-title {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 14px;
+
+    margin-bottom: 22px;
 
 }
 
 
-label {
+.section-title .icon {
 
-    display: block;
+    width: 50px;
 
-    margin-top: 15px;
+    height: 50px;
 
-    margin-bottom: 6px;
+    border-radius: 14px;
+
+    background: #ecfdf5;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    font-size: 25px;
+
+}
+
+
+.section-title h2 {
+
+    margin: 0 0 5px;
+
+    font-size: 22px;
+
+}
+
+
+.section-title p {
+
+    margin: 0;
+
+    color: #6b7280;
+
+    font-size: 14px;
+
+}
+
+
+/* ========================================
+   نموذج الإدخال
+======================================== */
+
+.form-grid {
+
+    display: grid;
+
+    grid-template-columns:
+        repeat(2, 1fr);
+
+    gap: 18px;
+
+}
+
+
+.input-group {
+
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 8px;
+
+}
+
+
+.input-group.full {
+
+    grid-column:
+        1 / -1;
+
+}
+
+
+.input-group label {
 
     font-weight: bold;
+
+    font-size: 14px;
 
 }
 
@@ -152,13 +255,34 @@ textarea {
 
     width: 100%;
 
+    border:
+        1px solid #d1d5db;
+
+    border-radius: 10px;
+
     padding: 13px;
 
-    border: 1px solid #ddd;
-
-    border-radius: 8px;
-
     font-size: 16px;
+
+    font-family: inherit;
+
+    outline: none;
+
+    background: white;
+
+    transition: 0.2s;
+
+}
+
+
+input:focus,
+textarea:focus {
+
+    border-color: #0d9488;
+
+    box-shadow:
+        0 0 0 3px
+        rgba(13,148,136,0.12);
 
 }
 
@@ -172,65 +296,344 @@ textarea {
 }
 
 
+/* ========================================
+   الأزرار
+======================================== */
+
 button {
-
-    width: 100%;
-
-    margin-top: 20px;
-
-    padding: 14px;
 
     border: none;
 
-    border-radius: 8px;
+    cursor: pointer;
 
-    background: #1769aa;
+    font-family: inherit;
+
+    font-size: 15px;
+
+    border-radius: 10px;
+
+    transition: 0.2s;
+
+}
+
+
+button:hover {
+
+    transform: translateY(-1px);
+
+}
+
+
+.primary-button {
+
+    margin-top: 20px;
+
+    background: #0d9488;
 
     color: white;
 
-    font-size: 17px;
-
-    cursor: pointer;
-
-}
-
-
-button:disabled {
-
-    opacity: 0.6;
-
-}
-
-
-#message {
-
-    margin-top: 15px;
-
-    text-align: center;
+    padding: 13px 24px;
 
     font-weight: bold;
 
 }
 
 
-@media (max-width: 600px) {
+.primary-button:hover {
 
-    .stats {
+    background: #0f766e;
 
-        grid-template-columns: 1fr;
+}
+
+
+/* ========================================
+   البحث
+======================================== */
+
+.search-box {
+
+    margin-bottom: 15px;
+
+}
+
+
+.search-box input {
+
+    font-size: 17px;
+
+    padding: 15px;
+
+}
+
+
+.scanner-buttons {
+
+    display: flex;
+
+    gap: 10px;
+
+    flex-wrap: wrap;
+
+}
+
+
+.scan-button {
+
+    background: #2563eb;
+
+    color: white;
+
+    padding: 12px 20px;
+
+}
+
+
+.stop-button {
+
+    background: #ef4444;
+
+    color: white;
+
+    padding: 12px 20px;
+
+}
+
+
+/* ========================================
+   الكاميرا
+======================================== */
+
+.reader {
+
+    max-width: 500px;
+
+    margin: 20px auto;
+
+}
+
+
+#reader video {
+
+    width: 100% !important;
+
+    border-radius: 15px;
+
+}
+
+
+/* ========================================
+   نتائج البحث
+======================================== */
+
+.search-results {
+
+    margin-top: 20px;
+
+}
+
+
+.patient-result {
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    gap: 15px;
+
+    padding: 18px;
+
+    margin-bottom: 12px;
+
+    border:
+        1px solid #e5e7eb;
+
+    border-radius: 14px;
+
+    background: #fafafa;
+
+}
+
+
+.patient-info strong {
+
+    font-size: 18px;
+
+}
+
+
+.patient-result p {
+
+    margin: 6px 0 0;
+
+    color: #6b7280;
+
+    font-size: 14px;
+
+}
+
+
+.patient-buttons {
+
+    display: flex;
+
+    gap: 8px;
+
+    flex-wrap: wrap;
+
+}
+
+
+.open-button {
+
+    background: #0d9488;
+
+    color: white;
+
+    padding: 10px 15px;
+
+}
+
+
+.barcode-button {
+
+    background: #374151;
+
+    color: white;
+
+    padding: 10px 15px;
+
+}
+
+
+.no-result {
+
+    text-align: center;
+
+    padding: 30px;
+
+    color: #6b7280;
+
+    background: #f9fafb;
+
+    border-radius: 12px;
+
+}
+
+
+/* ========================================
+   الباركود
+======================================== */
+
+.barcode-card {
+
+    text-align: center;
+
+}
+
+
+.barcode-container {
+
+    background: white;
+
+    padding: 20px;
+
+    margin: 10px auto 15px;
+
+    overflow-x: auto;
+
+}
+
+
+#barcode {
+
+    max-width: 100%;
+
+}
+
+
+/* ========================================
+   الهاتف
+======================================== */
+
+@media (max-width: 700px) {
+
+
+    .header {
+
+        padding: 20px 15px;
 
     }
+
 
     .header h1 {
 
-        font-size: 22px;
+        font-size: 21px;
 
     }
+
+
+    .header p {
+
+        font-size: 13px;
+
+    }
+
+
+    .container {
+
+        margin-top: 18px;
+
+        padding: 0 10px;
+
+    }
+
 
     .card {
 
         padding: 18px;
 
+        border-radius: 14px;
+
     }
+
+
+    .form-grid {
+
+        grid-template-columns: 1fr;
+
+    }
+
+
+    .input-group.full {
+
+        grid-column: auto;
+
+    }
+
+
+    .patient-result {
+
+        flex-direction: column;
+
+        align-items: stretch;
+
+    }
+
+
+    .patient-buttons {
+
+        width: 100%;
+
+    }
+
+
+    .patient-buttons button {
+
+        flex: 1;
+
+    }
+
 
 }

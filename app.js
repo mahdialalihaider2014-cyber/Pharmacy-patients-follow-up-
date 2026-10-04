@@ -1,24 +1,39 @@
-const API_URL =
-"https://script.google.com/macros/s/AKfycbxpciZPGC7wvRK-0hAYiZP1PETQh4m5hnWtgHGvCk56roAOtCPcGCR_pWhhek2iSfKB/exec";
+/* =====================================================
+   نظام متابعة مرضى الصيدلية
+   app.js
+===================================================== */
 
+
+/* =====================================================
+   رابط Google Apps Script الجديد
+===================================================== */
+
+const API_URL =
+"https://script.google.com/macros/s/AKfycbzkvBi5jiox12ObEG8RKoWgJM3hJrp1djQQpeopzKkrTmPAZvqdZUoUzT82etTZ11UG/exec";
+
+
+/* =====================================================
+   متغيرات عامة
+===================================================== */
 
 let allPatients = [];
+let scanner = null;
 
 
-/* =====================================
+/* =====================================================
    عند فتح الصفحة
-===================================== */
+===================================================== */
 
 document.addEventListener("DOMContentLoaded", function () {
 
     loadPatients();
 
-    const search =
+    const searchInput =
         document.getElementById("searchInput");
 
-    if (search) {
+    if (searchInput) {
 
-        search.addEventListener(
+        searchInput.addEventListener(
             "input",
             searchPatients
         );
@@ -28,21 +43,68 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 
 
-/* =====================================
-   تحميل المرضى
-===================================== */
+/* =====================================================
+   جلب المرضى من Google Sheets
+===================================================== */
 
 async function loadPatients() {
 
     try {
 
-        const response = await fetch(
-            API_URL + "?action=patients"
+        const url =
+            API_URL +
+            "?action=patients&_=" +
+            Date.now();
+
+
+        const response =
+            await fetch(url, {
+                method: "GET",
+                cache: "no-store"
+            });
+
+
+        if (!response.ok) {
+
+            throw new Error(
+                "HTTP Error: " +
+                response.status
+            );
+
+        }
+
+
+        const data =
+            await response.json();
+
+
+        console.log(
+            "بيانات المرضى:",
+            data
         );
 
-        const data = await response.json();
 
-        console.log("Patients:", data);
+        /*
+         إذا كان Google Apps Script
+         أرسل رسالة خطأ
+        */
+
+        if (
+            data &&
+            data.success === false
+        ) {
+
+            throw new Error(
+                data.message ||
+                "خطأ في قاعدة البيانات"
+            );
+
+        }
+
+
+        /*
+         البيانات الصحيحة يجب أن تكون Array
+        */
 
         if (Array.isArray(data)) {
 
@@ -54,71 +116,124 @@ async function loadPatients() {
 
         }
 
+
         displayPatients(allPatients);
+
 
     } catch (error) {
 
-        console.error(error);
+        console.error(
+            "خطأ تحميل المرضى:",
+            error
+        );
 
-        document.getElementById(
-            "patientsList"
-        ).innerHTML = `
 
-            <div class="no-result">
+        const container =
+            document.getElementById(
+                "patientsList"
+            );
 
-                ❌ تعذر تحميل بيانات المرضى.
 
-            </div>
+        if (container) {
 
-        `;
+            container.innerHTML = `
+
+                <div class="no-result">
+
+                    ❌ تعذر الاتصال بقاعدة بيانات المرضى.
+
+                    <br><br>
+
+                    <small>
+                    تأكد من إعداد Google Apps Script.
+                    </small>
+
+                </div>
+
+            `;
+
+        }
 
     }
 
 }
 
 
-/* =====================================
-   إضافة مريض
-===================================== */
+/* =====================================================
+   إضافة مريض جديد
+===================================================== */
 
 async function addPatient() {
 
-    const name =
+
+    const nameElement =
         document.getElementById(
             "patientName"
-        ).value.trim();
+        );
+
+
+    const phoneElement =
+        document.getElementById(
+            "patientPhone"
+        );
+
+
+    const birthDateElement =
+        document.getElementById(
+            "patientBirthDate"
+        );
+
+
+    const notesElement =
+        document.getElementById(
+            "patientNotes"
+        );
+
+
+    const name =
+        nameElement
+            ? nameElement.value.trim()
+            : "";
 
 
     const phone =
-        document.getElementById(
-            "patientPhone"
-        ).value.trim();
+        phoneElement
+            ? phoneElement.value.trim()
+            : "";
 
 
     const birthDate =
-        document.getElementById(
-            "patientBirthDate"
-        )?.value || "";
+        birthDateElement
+            ? birthDateElement.value
+            : "";
 
 
     const notes =
-        document.getElementById(
-            "patientNotes"
-        )?.value.trim() || "";
+        notesElement
+            ? notesElement.value.trim()
+            : "";
 
+
+    /* التحقق من الاسم */
 
     if (!name) {
 
-        alert("يرجى إدخال اسم المريض.");
+        alert(
+            "يرجى إدخال اسم المريض."
+        );
 
         return;
 
     }
 
 
+    /* التحقق من الهاتف */
+
     if (!phone) {
 
-        alert("يرجى إدخال رقم الهاتف.");
+        alert(
+            "يرجى إدخال رقم الهاتف."
+        );
 
         return;
 
@@ -127,21 +242,56 @@ async function addPatient() {
 
     try {
 
+
+        /*
+         بناء رابط الإضافة
+        */
+
         const url =
             API_URL +
+
             "?action=addPatient" +
+
             "&name=" +
             encodeURIComponent(name) +
+
             "&phone=" +
             encodeURIComponent(phone) +
+
             "&birthDate=" +
             encodeURIComponent(birthDate) +
+
             "&notes=" +
-            encodeURIComponent(notes);
+            encodeURIComponent(notes) +
+
+            "&_=" +
+            Date.now();
+
+
+        console.log(
+            "رابط إضافة المريض:",
+            url
+        );
 
 
         const response =
-            await fetch(url);
+            await fetch(url, {
+
+                method: "GET",
+
+                cache: "no-store"
+
+            });
+
+
+        if (!response.ok) {
+
+            throw new Error(
+                "HTTP Error: " +
+                response.status
+            );
+
+        }
 
 
         const data =
@@ -149,16 +299,24 @@ async function addPatient() {
 
 
         console.log(
-            "إضافة المريض:",
+            "نتيجة إضافة المريض:",
             data
         );
 
 
-        if (!data.success) {
+        /* إذا فشل الإضافة */
+
+        if (
+            !data ||
+            data.success !== true
+        ) {
 
             alert(
-                data.message ||
-                "لم تتم إضافة المريض."
+                "❌ " +
+                (
+                    data.message ||
+                    "لم تتم إضافة المريض."
+                )
             );
 
             return;
@@ -166,53 +324,56 @@ async function addPatient() {
         }
 
 
+        /* نجاح */
+
         alert(
             "✅ تمت إضافة المريض بنجاح"
         );
 
 
-        document.getElementById(
-            "patientName"
-        ).value = "";
+        /* تنظيف الحقول */
 
+        if (nameElement) {
 
-        document.getElementById(
-            "patientPhone"
-        ).value = "";
-
-
-        if (
-            document.getElementById(
-                "patientBirthDate"
-            )
-        ) {
-
-            document.getElementById(
-                "patientBirthDate"
-            ).value = "";
+            nameElement.value = "";
 
         }
 
 
-        if (
-            document.getElementById(
-                "patientNotes"
-            )
-        ) {
+        if (phoneElement) {
 
-            document.getElementById(
-                "patientNotes"
-            ).value = "";
+            phoneElement.value = "";
 
         }
 
 
-        loadPatients();
+        if (birthDateElement) {
+
+            birthDateElement.value = "";
+
+        }
+
+
+        if (notesElement) {
+
+            notesElement.value = "";
+
+        }
+
+
+        /* إعادة تحميل المرضى */
+
+        await loadPatients();
 
 
     } catch (error) {
 
-        console.error(error);
+
+        console.error(
+            "خطأ إضافة المريض:",
+            error
+        );
+
 
         alert(
             "❌ تعذر الاتصال بقاعدة بيانات المرضى."
@@ -223,11 +384,13 @@ async function addPatient() {
 }
 
 
-/* =====================================
-   البحث بالاسم أو الهاتف أو الباركود
-===================================== */
+/* =====================================================
+   البحث عن المريض
+   بالاسم أو الهاتف أو رقم المريض أو الباركود
+===================================================== */
 
 function searchPatients() {
+
 
     const input =
         document.getElementById(
@@ -248,6 +411,8 @@ function searchPatients() {
             .toLowerCase();
 
 
+    /* إذا كان البحث فارغًا */
+
     if (!value) {
 
         displayPatients(
@@ -261,7 +426,8 @@ function searchPatients() {
 
     const results =
         allPatients.filter(
-            function(patient) {
+            function (patient) {
+
 
                 const id =
                     String(
@@ -300,11 +466,12 @@ function searchPatients() {
 }
 
 
-/* =====================================
+/* =====================================================
    عرض المرضى
-===================================== */
+===================================================== */
 
 function displayPatients(patients) {
+
 
     const container =
         document.getElementById(
@@ -318,6 +485,8 @@ function displayPatients(patients) {
 
     }
 
+
+    /* لا يوجد مرضى */
 
     if (
         !patients ||
@@ -340,8 +509,28 @@ function displayPatients(patients) {
 
 
     container.innerHTML =
+
         patients.map(
-            function(patient) {
+            function (patient) {
+
+
+                const id =
+                    escapeHTML(
+                        patient.ID
+                    );
+
+
+                const name =
+                    escapeHTML(
+                        patient.Name
+                    );
+
+
+                const phone =
+                    escapeHTML(
+                        patient.Phone
+                    );
+
 
                 return `
 
@@ -350,33 +539,27 @@ function displayPatients(patients) {
                         <div class="patient-info">
 
                             <strong>
-                                👤
-                                ${escapeHTML(
-                                    patient.Name
-                                )}
+                                👤 ${name}
                             </strong>
 
                             <p>
-                                📱
-                                ${escapeHTML(
-                                    patient.Phone
-                                )}
+                                📱 ${phone}
                             </p>
 
                             <p>
-                                ▣
-                                ${escapeHTML(
-                                    patient.ID
-                                )}
+                                ▣ ${id}
                             </p>
 
                         </div>
+
 
                         <button
                             class="primary-button"
                             onclick="openPatient('${escapeJS(patient.ID)}')"
                         >
+
                             📂 فتح الملف
+
                         </button>
 
                     </div>
@@ -389,11 +572,12 @@ function displayPatients(patients) {
 }
 
 
-/* =====================================
+/* =====================================================
    فتح ملف المريض
-===================================== */
+===================================================== */
 
 function openPatient(id) {
+
 
     if (!id) {
 
@@ -409,14 +593,12 @@ function openPatient(id) {
 }
 
 
-/* =====================================
-   ماسح الباركود
-===================================== */
-
-let scanner = null;
-
+/* =====================================================
+   تشغيل قارئ الباركود
+===================================================== */
 
 function startBarcodeScanner() {
+
 
     const reader =
         document.getElementById(
@@ -435,8 +617,24 @@ function startBarcodeScanner() {
     }
 
 
+    if (
+        typeof Html5Qrcode ===
+        "undefined"
+    ) {
+
+        alert(
+            "قارئ الباركود غير محمل."
+        );
+
+        return;
+
+    }
+
+
     scanner =
-        new Html5Qrcode("reader");
+        new Html5Qrcode(
+            "reader"
+        );
 
 
     scanner.start(
@@ -456,7 +654,8 @@ function startBarcodeScanner() {
 
         },
 
-        function(decodedText) {
+
+        function (decodedText) {
 
 
             const search =
@@ -480,19 +679,29 @@ function startBarcodeScanner() {
 
         },
 
-        function(errorMessage) {
 
-            // تجاهل أخطاء القراءة المؤقتة
+        function (errorMessage) {
+
+            /*
+             تجاهل أخطاء البحث
+             أثناء قراءة الكاميرا
+            */
 
         }
 
     ).catch(
-        function(error) {
+        function (error) {
 
-            console.error(error);
+
+            console.error(
+                "Barcode error:",
+                error
+            );
+
 
             alert(
-                "تعذر تشغيل الكاميرا. اسمح للموقع باستخدام الكاميرا."
+                "❌ تعذر تشغيل الكاميرا.\n\n" +
+                "تأكد من السماح للموقع باستخدام الكاميرا."
             );
 
         }
@@ -501,11 +710,12 @@ function startBarcodeScanner() {
 }
 
 
-/* =====================================
-   إيقاف الباركود
-===================================== */
+/* =====================================================
+   إيقاف قارئ الباركود
+===================================================== */
 
 function stopBarcodeScanner() {
+
 
     if (!scanner) {
 
@@ -514,52 +724,84 @@ function stopBarcodeScanner() {
     }
 
 
-    scanner.stop()
-        .then(function() {
+    scanner
+        .stop()
+        .then(
+            function () {
 
-            scanner.clear();
+                scanner.clear();
 
-            scanner = null;
+                scanner = null;
 
-        })
-        .catch(function() {
+            }
+        )
+        .catch(
+            function () {
 
-            scanner = null;
+                scanner = null;
 
-        });
+            }
+        );
 
 }
 
 
-/* =====================================
+/* =====================================================
    حماية HTML
-===================================== */
+===================================================== */
 
 function escapeHTML(value) {
 
-    return String(value || "")
+    return String(
+        value || ""
+    )
 
-        .replace(/&/g, "&amp;")
+        .replace(
+            /&/g,
+            "&amp;"
+        )
 
-        .replace(/</g, "&lt;")
+        .replace(
+            /</g,
+            "&lt;"
+        )
 
-        .replace(/>/g, "&gt;")
+        .replace(
+            />/g,
+            "&gt;"
+        )
 
-        .replace(/"/g, "&quot;")
+        .replace(
+            /"/g,
+            "&quot;"
+        )
 
-        .replace(/'/g, "&#039;");
+        .replace(
+            /'/g,
+            "&#039;"
+        );
 
 }
 
 
-/* =====================================
-   حماية ID
-===================================== */
+/* =====================================================
+   حماية JavaScript
+===================================================== */
 
 function escapeJS(value) {
 
-    return String(value || "")
-        .replace(/\\/g, "\\\\")
-        .replace(/'/g, "\\'");
+    return String(
+        value || ""
+    )
+
+        .replace(
+            /\\/g,
+            "\\\\"
+        )
+
+        .replace(
+            /'/g,
+            "\\'"
+        );
 
 }

@@ -1,110 +1,115 @@
-/* =====================================================
-   نظام متابعة مرضى الصيدلية
-   app.js
-===================================================== */
-
-
-/* =====================================================
-   رابط Google Apps Script
-===================================================== */
-
 const API_URL =
 "https://script.google.com/macros/s/AKfycbxpciZPGC7wvRK-0hAYiZP1PETQh4m5hnWtgHGvCk56roAOtCPcGCR_pWhhek2iSfKB/exec";
 
 
-/* =====================================================
-   متغيرات عامة
-===================================================== */
-
 let allPatients = [];
 
-let html5QrCode = null;
 
-
-/* =====================================================
+/* =====================================
    عند فتح الصفحة
-===================================================== */
+===================================== */
 
-document.addEventListener(
-    "DOMContentLoaded",
-    function () {
+document.addEventListener("DOMContentLoaded", function () {
 
-        loadPatients();
+    loadPatients();
+
+    const search =
+        document.getElementById("searchInput");
+
+    if (search) {
+
+        search.addEventListener(
+            "input",
+            searchPatients
+        );
 
     }
-);
+
+});
 
 
-/* =====================================================
-   إضافة مريض جديد
-===================================================== */
+/* =====================================
+   تحميل المرضى
+===================================== */
+
+async function loadPatients() {
+
+    try {
+
+        const response = await fetch(
+            API_URL + "?action=patients"
+        );
+
+        const data = await response.json();
+
+        console.log("Patients:", data);
+
+        if (Array.isArray(data)) {
+
+            allPatients = data;
+
+        } else {
+
+            allPatients = [];
+
+        }
+
+        displayPatients(allPatients);
+
+    } catch (error) {
+
+        console.error(error);
+
+        document.getElementById(
+            "patientsList"
+        ).innerHTML = `
+
+            <div class="no-result">
+
+                ❌ تعذر تحميل بيانات المرضى.
+
+            </div>
+
+        `;
+
+    }
+
+}
+
+
+/* =====================================
+   إضافة مريض
+===================================== */
 
 async function addPatient() {
 
-
-    const nameElement =
+    const name =
         document.getElementById(
             "patientName"
-        );
-
-
-    const phoneElement =
-        document.getElementById(
-            "patientPhone"
-        );
-
-
-    const birthElement =
-        document.getElementById(
-            "patientBirthDate"
-        );
-
-
-    const notesElement =
-        document.getElementById(
-            "patientNotes"
-        );
-
-
-    if (
-        !nameElement ||
-        !phoneElement
-    ) {
-
-        alert(
-            "تعذر العثور على حقول المريض في الصفحة."
-        );
-
-        return;
-
-    }
-
-
-    const name =
-        nameElement.value.trim();
+        ).value.trim();
 
 
     const phone =
-        phoneElement.value.trim();
+        document.getElementById(
+            "patientPhone"
+        ).value.trim();
 
 
     const birthDate =
-        birthElement
-            ? birthElement.value
-            : "";
+        document.getElementById(
+            "patientBirthDate"
+        )?.value || "";
 
 
     const notes =
-        notesElement
-            ? notesElement.value.trim()
-            : "";
+        document.getElementById(
+            "patientNotes"
+        )?.value.trim() || "";
 
 
     if (!name) {
 
-        alert(
-            "يرجى إدخال اسم المريض."
-        );
+        alert("يرجى إدخال اسم المريض.");
 
         return;
 
@@ -113,9 +118,7 @@ async function addPatient() {
 
     if (!phone) {
 
-        alert(
-            "يرجى إدخال رقم الهاتف."
-        );
+        alert("يرجى إدخال رقم الهاتف.");
 
         return;
 
@@ -124,69 +127,31 @@ async function addPatient() {
 
     try {
 
+        const url =
+            API_URL +
+            "?action=addPatient" +
+            "&name=" +
+            encodeURIComponent(name) +
+            "&phone=" +
+            encodeURIComponent(phone) +
+            "&birthDate=" +
+            encodeURIComponent(birthDate) +
+            "&notes=" +
+            encodeURIComponent(notes);
+
 
         const response =
-            await fetch(
-                API_URL,
-                {
-
-                    method: "POST",
-
-                    body: JSON.stringify({
-
-                        action:
-                            "addPatient",
-
-                        name:
-                            name,
-
-                        phone:
-                            phone,
-
-                        birthDate:
-                            birthDate,
-
-                        notes:
-                            notes
-
-                    })
-
-                }
-            );
+            await fetch(url);
 
 
-        const text =
-            await response.text();
+        const data =
+            await response.json();
 
 
         console.log(
-            "Google Apps Script:",
-            text
+            "إضافة المريض:",
+            data
         );
-
-
-        let data;
-
-
-        try {
-
-            data =
-                JSON.parse(text);
-
-        } catch (error) {
-
-            console.error(
-                "استجابة غير صالحة:",
-                text
-            );
-
-            alert(
-                "تم الاتصال بالخادم لكن الاستجابة غير مفهومة."
-            );
-
-            return;
-
-        }
 
 
         if (!data.success) {
@@ -206,46 +171,51 @@ async function addPatient() {
         );
 
 
-        /*
-        تنظيف الحقول
-        */
-
-        nameElement.value = "";
-
-        phoneElement.value = "";
+        document.getElementById(
+            "patientName"
+        ).value = "";
 
 
-        if (birthElement) {
+        document.getElementById(
+            "patientPhone"
+        ).value = "";
 
-            birthElement.value = "";
+
+        if (
+            document.getElementById(
+                "patientBirthDate"
+            )
+        ) {
+
+            document.getElementById(
+                "patientBirthDate"
+            ).value = "";
 
         }
 
 
-        if (notesElement) {
+        if (
+            document.getElementById(
+                "patientNotes"
+            )
+        ) {
 
-            notesElement.value = "";
+            document.getElementById(
+                "patientNotes"
+            ).value = "";
 
         }
 
-
-        /*
-        تحديث قائمة المرضى
-        */
 
         loadPatients();
 
 
     } catch (error) {
 
-        console.error(
-            "خطأ الاتصال:",
-            error
-        );
-
+        console.error(error);
 
         alert(
-            "❌ تعذر الاتصال بقاعدة بيانات المرضى.\n\nتأكد من نشر Google Apps Script كـ Web App."
+            "❌ تعذر الاتصال بقاعدة بيانات المرضى."
         );
 
     }
@@ -253,133 +223,16 @@ async function addPatient() {
 }
 
 
-/* =====================================================
-   تحميل جميع المرضى
-===================================================== */
-
-async function loadPatients() {
-
-
-    try {
-
-
-        const response =
-            await fetch(
-                API_URL +
-                "?action=patients"
-            );
-
-
-        const text =
-            await response.text();
-
-
-        console.log(
-            "Patients:",
-            text
-        );
-
-
-        const data =
-            JSON.parse(text);
-
-
-        /*
-        إذا كان السيرفر يرجع
-        success:false
-        */
-
-        if (
-            data &&
-            data.success === false
-        ) {
-
-            alert(
-                data.message ||
-                "تعذر تحميل المرضى."
-            );
-
-            return;
-
-        }
-
-
-        /*
-        حفظ البيانات
-        */
-
-        if (
-            Array.isArray(data)
-        ) {
-
-            allPatients = data;
-
-        } else if (
-            data &&
-            Array.isArray(data.patients)
-        ) {
-
-            allPatients =
-                data.patients;
-
-        } else {
-
-            allPatients = [];
-
-        }
-
-
-        displayPatients(
-            allPatients
-        );
-
-
-    } catch (error) {
-
-        console.error(
-            "خطأ تحميل المرضى:",
-            error
-        );
-
-
-        /*
-        لا تظهر رسالة عند فتح الصفحة
-        حتى لا تزعج المستخدم
-        */
-
-        const container =
-            getPatientsContainer();
-
-
-        if (container) {
-
-            container.innerHTML = `
-
-                <div class="no-result">
-
-                    لا توجد بيانات للعرض.
-
-                </div>
-
-            `;
-
-        }
-
-    }
-
-}
-
-
-/* =====================================================
-   البحث عن المريض
-   الاسم + الهاتف + الباركود
-===================================================== */
+/* =====================================
+   البحث بالاسم أو الهاتف أو الباركود
+===================================== */
 
 function searchPatients() {
 
-
     const input =
-        getSearchInput();
+        document.getElementById(
+            "searchInput"
+        );
 
 
     if (!input) {
@@ -389,13 +242,13 @@ function searchPatients() {
     }
 
 
-    const search =
+    const value =
         input.value
             .trim()
             .toLowerCase();
 
 
-    if (!search) {
+    if (!value) {
 
         displayPatients(
             allPatients
@@ -408,8 +261,7 @@ function searchPatients() {
 
     const results =
         allPatients.filter(
-            function (patient) {
-
+            function(patient) {
 
                 const id =
                     String(
@@ -431,11 +283,11 @@ function searchPatients() {
 
                 return (
 
-                    id.includes(search) ||
+                    id.includes(value) ||
 
-                    name.includes(search) ||
+                    name.includes(value) ||
 
-                    phone.includes(search)
+                    phone.includes(value)
 
                 );
 
@@ -443,24 +295,21 @@ function searchPatients() {
         );
 
 
-    displayPatients(
-        results
-    );
+    displayPatients(results);
 
 }
 
 
-/* =====================================================
+/* =====================================
    عرض المرضى
-===================================================== */
+===================================== */
 
-function displayPatients(
-    patients
-) {
-
+function displayPatients(patients) {
 
     const container =
-        getPatientsContainer();
+        document.getElementById(
+            "patientsList"
+        );
 
 
     if (!container) {
@@ -479,7 +328,7 @@ function displayPatients(
 
             <div class="no-result">
 
-                🔍 لم يتم العثور على مريض.
+                🔍 لا يوجد مريض مطابق للبحث.
 
             </div>
 
@@ -491,76 +340,60 @@ function displayPatients(
 
 
     container.innerHTML =
-        patients
-            .map(
-                function (patient) {
+        patients.map(
+            function(patient) {
 
-                    return `
+                return `
 
-                        <div class="patient-result">
+                    <div class="patient-result">
 
-                            <div class="patient-info">
+                        <div class="patient-info">
 
-                                <strong>
+                            <strong>
+                                👤
+                                ${escapeHTML(
+                                    patient.Name
+                                )}
+                            </strong>
 
-                                    👤
-                                    ${escapeHTML(
-                                        patient.Name
-                                    )}
+                            <p>
+                                📱
+                                ${escapeHTML(
+                                    patient.Phone
+                                )}
+                            </p>
 
-                                </strong>
-
-
-                                <p>
-
-                                    📱
-                                    ${escapeHTML(
-                                        patient.Phone
-                                    )}
-
-                                </p>
-
-
-                                <p>
-
-                                    ▣ رقم المريض:
-                                    ${escapeHTML(
-                                        patient.ID
-                                    )}
-
-                                </p>
-
-                            </div>
-
-
-                            <button
-                                class="primary-button"
-                                onclick="openPatient('${escapeAttribute(patient.ID)}')"
-                            >
-
-                                📂 فتح الملف
-
-                            </button>
+                            <p>
+                                ▣
+                                ${escapeHTML(
+                                    patient.ID
+                                )}
+                            </p>
 
                         </div>
 
-                    `;
+                        <button
+                            class="primary-button"
+                            onclick="openPatient('${escapeJS(patient.ID)}')"
+                        >
+                            📂 فتح الملف
+                        </button>
 
-                }
-            )
-            .join("");
+                    </div>
+
+                `;
+
+            }
+        ).join("");
 
 }
 
 
-/* =====================================================
+/* =====================================
    فتح ملف المريض
-===================================================== */
+===================================== */
 
-function openPatient(
-    id
-) {
-
+function openPatient(id) {
 
     if (!id) {
 
@@ -576,12 +409,14 @@ function openPatient(
 }
 
 
-/* =====================================================
-   تشغيل ماسح الباركود
-===================================================== */
+/* =====================================
+   ماسح الباركود
+===================================== */
 
-async function startBarcodeScanner() {
+let scanner = null;
 
+
+function startBarcodeScanner() {
 
     const reader =
         document.getElementById(
@@ -600,296 +435,131 @@ async function startBarcodeScanner() {
     }
 
 
-    try {
+    scanner =
+        new Html5Qrcode("reader");
 
 
-        if (!html5QrCode) {
+    scanner.start(
 
-            html5QrCode =
-                new Html5Qrcode(
-                    "reader"
+        {
+            facingMode:
+                "environment"
+        },
+
+        {
+            fps: 10,
+
+            qrbox: {
+                width: 250,
+                height: 120
+            }
+
+        },
+
+        function(decodedText) {
+
+
+            const search =
+                document.getElementById(
+                    "searchInput"
                 );
 
-        }
 
+            if (search) {
 
-        await html5QrCode.start(
-
-            {
-                facingMode:
-                    "environment"
-            },
-
-            {
-                fps: 10,
-
-                qrbox: {
-                    width: 250,
-                    height: 120
-                }
-
-            },
-
-            function (
-                decodedText
-            ) {
-
-
-                /*
-                إيقاف الكاميرا
-                */
-
-                stopBarcodeScanner();
-
-
-                /*
-                وضع رقم الباركود
-                داخل مربع البحث
-                */
-
-                const input =
-                    getSearchInput();
-
-
-                if (input) {
-
-                    input.value =
-                        decodedText;
-
-                }
-
-
-                /*
-                البحث مباشرة
-                */
-
-                searchPatients();
-
-            },
-
-            function (errorMessage) {
-
-                /*
-                تجاهل أخطاء القراءة
-                المؤقتة
-                */
+                search.value =
+                    decodedText;
 
             }
 
-        );
+
+            searchPatients();
 
 
-    } catch (error) {
+            stopBarcodeScanner();
 
-        console.error(
-            error
-        );
+        },
 
+        function(errorMessage) {
 
-        alert(
-            "تعذر تشغيل الكاميرا.\n\nتأكد من السماح للموقع باستخدام الكاميرا."
-        );
+            // تجاهل أخطاء القراءة المؤقتة
 
-    }
+        }
+
+    ).catch(
+        function(error) {
+
+            console.error(error);
+
+            alert(
+                "تعذر تشغيل الكاميرا. اسمح للموقع باستخدام الكاميرا."
+            );
+
+        }
+    );
 
 }
 
 
-/* =====================================================
-   إيقاف ماسح الباركود
-===================================================== */
+/* =====================================
+   إيقاف الباركود
+===================================== */
 
-async function stopBarcodeScanner() {
+function stopBarcodeScanner() {
 
-
-    try {
-
-        if (html5QrCode) {
-
-            const state =
-                html5QrCode.getState();
-
-
-            if (
-                state ===
-                Html5QrcodeScannerState.SCANNING
-            ) {
-
-                await html5QrCode.stop();
-
-            }
-
-        }
-
-    } catch (error) {
-
-        console.log(
-            error
-        );
-
-    }
-
-}
-
-
-/* =====================================================
-   البحث عند الكتابة
-===================================================== */
-
-function setupSearch() {
-
-
-    const input =
-        getSearchInput();
-
-
-    if (!input) {
+    if (!scanner) {
 
         return;
 
     }
 
 
-    input.addEventListener(
-        "input",
-        function () {
+    scanner.stop()
+        .then(function() {
 
-            searchPatients();
+            scanner.clear();
 
-        }
-    );
+            scanner = null;
 
-}
+        })
+        .catch(function() {
 
+            scanner = null;
 
-/* =====================================================
-   العثور على مربع البحث
-===================================================== */
-
-function getSearchInput() {
-
-
-    return (
-
-        document.getElementById(
-            "searchInput"
-        ) ||
-
-        document.getElementById(
-            "search"
-        ) ||
-
-        document.getElementById(
-            "patientSearch"
-        )
-
-    );
+        });
 
 }
 
 
-/* =====================================================
-   العثور على قائمة المرضى
-===================================================== */
-
-function getPatientsContainer() {
-
-
-    return (
-
-        document.getElementById(
-            "patientsList"
-        ) ||
-
-        document.getElementById(
-            "searchResults"
-        ) ||
-
-        document.getElementById(
-            "patients"
-        )
-
-    );
-
-}
-
-
-/* =====================================================
+/* =====================================
    حماية HTML
-===================================================== */
+===================================== */
 
-function escapeHTML(
-    value
-) {
+function escapeHTML(value) {
 
+    return String(value || "")
 
-    return String(
-        value || ""
-    )
+        .replace(/&/g, "&amp;")
 
-    .replace(
-        /&/g,
-        "&amp;"
-    )
+        .replace(/</g, "&lt;")
 
-    .replace(
-        /</g,
-        "&lt;"
-    )
+        .replace(/>/g, "&gt;")
 
-    .replace(
-        />/g,
-        "&gt;"
-    )
+        .replace(/"/g, "&quot;")
 
-    .replace(
-        /"/g,
-        "&quot;"
-    )
-
-    .replace(
-        /'/g,
-        "&#039;"
-    );
+        .replace(/'/g, "&#039;");
 
 }
 
 
-/* =====================================================
-   حماية ID داخل onclick
-===================================================== */
+/* =====================================
+   حماية ID
+===================================== */
 
-function escapeAttribute(
-    value
-) {
+function escapeJS(value) {
 
-
-    return String(
-        value || ""
-    )
-
-    .replace(
-        /\\/g,
-        "\\\\"
-    )
-
-    .replace(
-        /'/g,
-        "\\'"
-    );
+    return String(value || "")
+        .replace(/\\/g, "\\\\")
+        .replace(/'/g, "\\'");
 
 }
-
-
-/* =====================================================
-   تشغيل البحث بعد تحميل الصفحة
-===================================================== */
-
-document.addEventListener(
-    "DOMContentLoaded",
-    function () {
-
-        setupSearch();
-
-    }
-);

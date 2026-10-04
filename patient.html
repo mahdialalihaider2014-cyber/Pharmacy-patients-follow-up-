@@ -17,6 +17,7 @@
         href="style.css"
     >
 
+    <!-- إنشاء الباركود -->
     <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.6/dist/JsBarcode.all.min.js"></script>
 
 </head>
@@ -24,10 +25,6 @@
 
 <body>
 
-
-<!-- =========================
-     الهيدر
-========================= -->
 
 <header class="header">
 
@@ -59,7 +56,7 @@
 
 
     <!-- =========================
-         زر الرجوع
+         العودة
     ========================= -->
 
     <button
@@ -67,14 +64,14 @@
         onclick="goBack()"
     >
 
-        ← العودة إلى المرضى
+        ← العودة إلى قائمة المرضى
 
     </button>
 
 
 
     <!-- =========================
-         معلومات المريض
+         بيانات المريض
     ========================= -->
 
     <section class="card">
@@ -127,6 +124,7 @@
                 <input
                     id="patientName"
                     type="text"
+                    placeholder="اسم المريض"
                 >
 
             </div>
@@ -141,6 +139,7 @@
                 <input
                     id="patientPhone"
                     type="tel"
+                    placeholder="رقم الهاتف"
                 >
 
             </div>
@@ -168,10 +167,10 @@
 
                 <textarea
                     id="patientNotes"
+                    placeholder="ملاحظات عن المريض..."
                 ></textarea>
 
             </div>
-
 
         </div>
 
@@ -208,7 +207,7 @@
                 </h2>
 
                 <p>
-                    يمكن استخدامه للبحث السريع
+                    استخدمه للبحث السريع عن المريض
                 </p>
 
             </div>
@@ -275,7 +274,7 @@
                 <input
                     id="medicineName"
                     type="text"
-                    placeholder="مثال: Metformin"
+                    placeholder="مثال: Metformin 500mg"
                 >
 
             </div>
@@ -290,7 +289,7 @@
                 <input
                     id="medicineDose"
                     type="text"
-                    placeholder="مثال: 500 mg"
+                    placeholder="مثال: حبة واحدة"
                 >
 
             </div>
@@ -362,7 +361,7 @@
             <div class="input-group full">
 
                 <label>
-                    موعد المتابعة المتوقع
+                    موعد المتابعة
                 </label>
 
                 <input
@@ -409,7 +408,7 @@
                 </h2>
 
                 <p>
-                    جميع الأدوية المسجلة لهذا المريض
+                    الأدوية المسجلة لهذا المريض
                 </p>
 
             </div>
@@ -420,7 +419,9 @@
         <div id="medicinesList">
 
             <div class="no-result">
+
                 جارٍ تحميل الأدوية...
+
             </div>
 
         </div>
@@ -434,17 +435,18 @@
 
 <script>
 
-/* ========================================
-   رابط Google Apps Script
-======================================== */
+
+/* =========================================
+   رابط Google Apps Script الصحيح
+========================================= */
 
 const API_URL =
-"https://script.google.com/macros/s/AKfycbxpciZPGC7wvRK-0hAYiZP1PETQh4m5hnWtgHGvC56roAOtCPcGCR_pWhhek2iSfKB/exec";
+"https://script.google.com/macros/s/AKfycbxpciZPGC7wvRK-0hAYiZP1PETQh4m5hnWtgHGvCk56roAOtCPcGCR_pWhhek2iSfKB/exec";
 
 
-/* ========================================
-   رقم المريض من الرابط
-======================================== */
+/* =========================================
+   قراءة رقم المريض من الرابط
+========================================= */
 
 const urlParams =
     new URLSearchParams(
@@ -456,9 +458,9 @@ const patientID =
     urlParams.get("id");
 
 
-/* ========================================
+/* =========================================
    عند فتح الصفحة
-======================================== */
+========================================= */
 
 document.addEventListener(
     "DOMContentLoaded",
@@ -467,7 +469,7 @@ document.addEventListener(
         if (!patientID) {
 
             alert(
-                "لم يتم تحديد رقم المريض"
+                "لم يتم تحديد رقم المريض."
             );
 
             return;
@@ -475,19 +477,24 @@ document.addEventListener(
         }
 
 
+        document.getElementById(
+            "patientID"
+        ).value = patientID;
+
+
+        setToday();
+
         loadPatient();
 
         loadMedicines();
-
-        setToday();
 
     }
 );
 
 
-/* ========================================
+/* =========================================
    تحميل بيانات المريض
-======================================== */
+========================================= */
 
 async function loadPatient() {
 
@@ -507,11 +514,17 @@ async function loadPatient() {
             await response.json();
 
 
+        console.log(
+            "بيانات المريض:",
+            data
+        );
+
+
         if (!data.success) {
 
             alert(
                 data.message ||
-                "لم يتم العثور على المريض"
+                "تعذر العثور على المريض."
             );
 
             return;
@@ -556,34 +569,45 @@ async function loadPatient() {
 
 
         /*
-        إنشاء الباركود
+        إنشاء باركود المريض
         */
 
         JsBarcode(
             "#patientBarcode",
             String(patient.ID),
             {
+
                 format: "CODE128",
+
                 width: 2,
+
                 height: 80,
+
                 displayValue: true,
+
                 fontSize: 18,
+
                 margin: 10
+
             }
         );
 
 
         document.title =
             "ملف المريض - " +
-            patient.Name;
+            (patient.Name || "");
 
 
     } catch (error) {
 
-        console.error(error);
+        console.error(
+            "خطأ:",
+            error
+        );
+
 
         alert(
-            "حدث خطأ أثناء تحميل بيانات المريض"
+            "تعذر الاتصال بقاعدة بيانات المرضى."
         );
 
     }
@@ -591,9 +615,9 @@ async function loadPatient() {
 }
 
 
-/* ========================================
+/* =========================================
    تعديل بيانات المريض
-======================================== */
+========================================= */
 
 async function updatePatient() {
 
@@ -625,7 +649,7 @@ async function updatePatient() {
     if (!name) {
 
         alert(
-            "يرجى إدخال اسم المريض"
+            "يرجى إدخال اسم المريض."
         );
 
         return;
@@ -635,10 +659,12 @@ async function updatePatient() {
 
     try {
 
+
         const response =
             await fetch(
                 API_URL,
                 {
+
                     method: "POST",
 
                     body: JSON.stringify({
@@ -662,6 +688,7 @@ async function updatePatient() {
                             notes
 
                     })
+
                 }
             );
 
@@ -670,11 +697,17 @@ async function updatePatient() {
             await response.json();
 
 
+        console.log(
+            "تعديل المريض:",
+            data
+        );
+
+
         if (!data.success) {
 
             alert(
                 data.message ||
-                "لم يتم حفظ التعديلات"
+                "لم يتم حفظ التعديل."
             );
 
             return;
@@ -683,16 +716,19 @@ async function updatePatient() {
 
 
         alert(
-            "✅ تم حفظ بيانات المريض بنجاح"
+            "✅ تم حفظ تعديلات المريض بنجاح."
         );
 
 
     } catch (error) {
 
-        console.error(error);
+        console.error(
+            error
+        );
+
 
         alert(
-            "حدث خطأ أثناء حفظ البيانات"
+            "تعذر الاتصال بقاعدة البيانات."
         );
 
     }
@@ -700,9 +736,9 @@ async function updatePatient() {
 }
 
 
-/* ========================================
-   تاريخ اليوم
-======================================== */
+/* =========================================
+   وضع تاريخ اليوم
+========================================= */
 
 function setToday() {
 
@@ -710,29 +746,39 @@ function setToday() {
         new Date();
 
 
-    const date =
-        today.getFullYear() +
-        "-" +
+    const year =
+        today.getFullYear();
+
+
+    const month =
         String(
             today.getMonth() + 1
-        ).padStart(2, "0") +
-        "-" +
+        ).padStart(
+            2,
+            "0"
+        );
+
+
+    const day =
         String(
             today.getDate()
-        ).padStart(2, "0");
+        ).padStart(
+            2,
+            "0"
+        );
 
 
     document.getElementById(
         "dispenseDate"
     ).value =
-        date;
+        `${year}-${month}-${day}`;
 
 }
 
 
-/* ========================================
+/* =========================================
    حساب موعد المتابعة
-======================================== */
+========================================= */
 
 function calculateFollowUp() {
 
@@ -751,7 +797,10 @@ function calculateFollowUp() {
         );
 
 
-    if (!dispenseDate || !days) {
+    if (
+        !dispenseDate ||
+        !days
+    ) {
 
         document.getElementById(
             "followUpDate"
@@ -775,29 +824,39 @@ function calculateFollowUp() {
     );
 
 
-    const result =
-        date.getFullYear() +
-        "-" +
+    const year =
+        date.getFullYear();
+
+
+    const month =
         String(
             date.getMonth() + 1
-        ).padStart(2, "0") +
-        "-" +
+        ).padStart(
+            2,
+            "0"
+        );
+
+
+    const day =
         String(
             date.getDate()
-        ).padStart(2, "0");
+        ).padStart(
+            2,
+            "0"
+        );
 
 
     document.getElementById(
         "followUpDate"
     ).value =
-        result;
+        `${year}-${month}-${day}`;
 
 }
 
 
-/* ========================================
+/* =========================================
    إضافة دواء
-======================================== */
+========================================= */
 
 async function addMedicine() {
 
@@ -841,7 +900,7 @@ async function addMedicine() {
     if (!medicineName) {
 
         alert(
-            "يرجى إدخال اسم الدواء"
+            "يرجى إدخال اسم الدواء."
         );
 
         return;
@@ -851,10 +910,12 @@ async function addMedicine() {
 
     try {
 
+
         const response =
             await fetch(
                 API_URL,
                 {
+
                     method: "POST",
 
                     body: JSON.stringify({
@@ -884,6 +945,7 @@ async function addMedicine() {
                             days
 
                     })
+
                 }
             );
 
@@ -892,11 +954,17 @@ async function addMedicine() {
             await response.json();
 
 
+        console.log(
+            "إضافة الدواء:",
+            data
+        );
+
+
         if (!data.success) {
 
             alert(
                 data.message ||
-                "لم تتم إضافة الدواء"
+                "لم تتم إضافة الدواء."
             );
 
             return;
@@ -905,7 +973,7 @@ async function addMedicine() {
 
 
         alert(
-            "✅ تمت إضافة الدواء بنجاح"
+            "✅ تمت إضافة الدواء بنجاح."
         );
 
 
@@ -944,7 +1012,7 @@ async function addMedicine() {
 
 
         /*
-        تحديث قائمة الأدوية
+        إعادة تحميل الأدوية
         */
 
         loadMedicines();
@@ -952,10 +1020,13 @@ async function addMedicine() {
 
     } catch (error) {
 
-        console.error(error);
+        console.error(
+            error
+        );
+
 
         alert(
-            "حدث خطأ أثناء إضافة الدواء"
+            "تعذر الاتصال بقاعدة البيانات."
         );
 
     }
@@ -963,9 +1034,9 @@ async function addMedicine() {
 }
 
 
-/* ========================================
-   تحميل الأدوية
-======================================== */
+/* =========================================
+   تحميل أدوية المريض
+========================================= */
 
 async function loadMedicines() {
 
@@ -977,6 +1048,7 @@ async function loadMedicines() {
 
 
     try {
+
 
         const response =
             await fetch(
@@ -992,13 +1064,23 @@ async function loadMedicines() {
             await response.json();
 
 
-        if (!Array.isArray(medicines)) {
+        console.log(
+            "الأدوية:",
+            medicines
+        );
+
+
+        if (
+            !Array.isArray(
+                medicines
+            )
+        ) {
 
             container.innerHTML = `
 
                 <div class="no-result">
 
-                    لا توجد أدوية مسجلة
+                    لا توجد أدوية مسجلة.
 
                 </div>
 
@@ -1009,13 +1091,15 @@ async function loadMedicines() {
         }
 
 
-        if (medicines.length === 0) {
+        if (
+            medicines.length === 0
+        ) {
 
             container.innerHTML = `
 
                 <div class="no-result">
 
-                    💊 لا توجد أدوية مسجلة لهذا المريض
+                    💊 لا توجد أدوية مسجلة لهذا المريض.
 
                 </div>
 
@@ -1037,42 +1121,66 @@ async function loadMedicines() {
                             <div class="patient-info">
 
                                 <strong>
+
                                     💊
                                     ${escapeHTML(
                                         medicine.MedicineName
                                     )}
+
                                 </strong>
 
+
                                 <p>
+
                                     الجرعة:
                                     ${escapeHTML(
                                         medicine.Dose ||
                                         "غير محددة"
                                     )}
+
                                 </p>
 
+
                                 <p>
-                                    عدد المرات:
+
+                                    الاستخدام:
                                     ${escapeHTML(
                                         medicine.TimesPerDay ||
                                         "غير محدد"
                                     )}
-                                    يومياً
+                                    مرة يومياً
+
                                 </p>
 
+
                                 <p>
+
                                     الكمية:
                                     ${escapeHTML(
                                         medicine.Quantity ||
                                         "غير محددة"
                                     )}
+
                                 </p>
 
+
                                 <p>
+
+                                    تاريخ الصرف:
+                                    ${formatDisplayDate(
+                                        medicine.DispenseDate
+                                    )}
+
+                                </p>
+
+
+                                <p>
+
                                     موعد المتابعة:
-                                    ${formatDate(
+                                    ${formatDisplayDate(
                                         medicine.FollowUpDate
                                     )}
+
                                 </p>
 
                             </div>
@@ -1088,13 +1196,16 @@ async function loadMedicines() {
 
     } catch (error) {
 
-        console.error(error);
+        console.error(
+            error
+        );
+
 
         container.innerHTML = `
 
             <div class="no-result">
 
-                ❌ تعذر تحميل الأدوية
+                ❌ تعذر تحميل الأدوية.
 
             </div>
 
@@ -1105,9 +1216,9 @@ async function loadMedicines() {
 }
 
 
-/* ========================================
-   طباعة الباركود
-======================================== */
+/* =========================================
+   طباعة باركود المريض
+========================================= */
 
 function printBarcode() {
 
@@ -1135,6 +1246,17 @@ function printBarcode() {
             "",
             "_blank"
         );
+
+
+    if (!printWindow) {
+
+        alert(
+            "يرجى السماح بالنوافذ المنبثقة للطباعة."
+        );
+
+        return;
+
+    }
 
 
     printWindow.document.write(`
@@ -1176,6 +1298,7 @@ function printBarcode() {
 
         </head>
 
+
         <body>
 
             <h2>
@@ -1189,6 +1312,7 @@ function printBarcode() {
 
             ${barcode}
 
+
             <script>
 
                 window.onload =
@@ -1199,6 +1323,7 @@ function printBarcode() {
                 };
 
             <\/script>
+
 
         </body>
 
@@ -1212,9 +1337,9 @@ function printBarcode() {
 }
 
 
-/* ========================================
-   العودة
-======================================== */
+/* =========================================
+   العودة إلى الصفحة الرئيسية
+========================================= */
 
 function goBack() {
 
@@ -1224,11 +1349,12 @@ function goBack() {
 }
 
 
-/* ========================================
-   تنسيق التاريخ لحقل HTML
-======================================== */
+/* =========================================
+   التاريخ إلى input date
+========================================= */
 
 function formatDateForInput(value) {
+
 
     if (!value) {
 
@@ -1237,11 +1363,43 @@ function formatDateForInput(value) {
     }
 
 
+    /*
+    إذا كان التاريخ أصلاً
+    بالشكل YYYY-MM-DD
+    */
+
+    const stringValue =
+        String(value);
+
+
+    const match =
+        stringValue.match(
+            /^(\d{4})-(\d{2})-(\d{2})/
+        );
+
+
+    if (match) {
+
+        return (
+            match[1] +
+            "-" +
+            match[2] +
+            "-" +
+            match[3]
+        );
+
+    }
+
+
     const date =
         new Date(value);
 
 
-    if (isNaN(date.getTime())) {
+    if (
+        isNaN(
+            date.getTime()
+        )
+    ) {
 
         return "";
 
@@ -1253,21 +1411,28 @@ function formatDateForInput(value) {
         "-" +
         String(
             date.getMonth() + 1
-        ).padStart(2, "0") +
+        ).padStart(
+            2,
+            "0"
+        ) +
         "-" +
         String(
             date.getDate()
-        ).padStart(2, "0")
+        ).padStart(
+            2,
+            "0"
+        )
     );
 
 }
 
 
-/* ========================================
-   تنسيق التاريخ للعرض
-======================================== */
+/* =========================================
+   عرض التاريخ
+========================================= */
 
-function formatDate(value) {
+function formatDisplayDate(value) {
+
 
     if (!value) {
 
@@ -1276,11 +1441,38 @@ function formatDate(value) {
     }
 
 
+    const stringValue =
+        String(value);
+
+
+    const match =
+        stringValue.match(
+            /^(\d{4})-(\d{2})-(\d{2})/
+        );
+
+
+    if (match) {
+
+        return (
+            match[3] +
+            "/" +
+            match[2] +
+            "/" +
+            match[1]
+        );
+
+    }
+
+
     const date =
         new Date(value);
 
 
-    if (isNaN(date.getTime())) {
+    if (
+        isNaN(
+            date.getTime()
+        )
+    ) {
 
         return "غير محدد";
 
@@ -1290,11 +1482,17 @@ function formatDate(value) {
     return (
         String(
             date.getDate()
-        ).padStart(2, "0") +
+        ).padStart(
+            2,
+            "0"
+        ) +
         "/" +
         String(
             date.getMonth() + 1
-        ).padStart(2, "0") +
+        ).padStart(
+            2,
+            "0"
+        ) +
         "/" +
         date.getFullYear()
     );
@@ -1302,9 +1500,9 @@ function formatDate(value) {
 }
 
 
-/* ========================================
-   حماية HTML
-======================================== */
+/* =========================================
+   حماية النصوص
+========================================= */
 
 function escapeHTML(value) {
 
@@ -1338,6 +1536,7 @@ function escapeHTML(value) {
     );
 
 }
+
 
 </script>
 

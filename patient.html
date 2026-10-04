@@ -17,7 +17,7 @@
         href="style.css"
     >
 
-    <!-- إنشاء الباركود -->
+    <!-- مكتبة الباركود -->
     <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.6/dist/JsBarcode.all.min.js"></script>
 
 </head>
@@ -25,6 +25,10 @@
 
 <body>
 
+
+<!-- ==================================================
+     الهيدر
+================================================== -->
 
 <header class="header">
 
@@ -41,7 +45,7 @@
             </h1>
 
             <p>
-                متابعة بيانات وأدوية المريض
+                نظام متابعة مرضى الصيدلية
             </p>
 
         </div>
@@ -55,24 +59,26 @@
 <main class="container">
 
 
-    <!-- =========================
-         العودة
-    ========================= -->
+    <!-- ==================================================
+         أزرار العودة
+    ================================================== -->
 
-    <button
-        class="primary-button"
-        onclick="goBack()"
-    >
+    <div style="margin-bottom:20px;">
 
-        ← العودة إلى قائمة المرضى
+        <button
+            class="primary-button"
+            onclick="goBack()"
+        >
+            ← العودة إلى المرضى
+        </button>
 
-    </button>
+    </div>
 
 
 
-    <!-- =========================
+    <!-- ==================================================
          بيانات المريض
-    ========================= -->
+    ================================================== -->
 
     <section class="card">
 
@@ -85,11 +91,11 @@
             <div>
 
                 <h2>
-                    معلومات المريض
+                    بيانات المريض
                 </h2>
 
                 <p>
-                    بيانات المريض الأساسية
+                    معلومات المريض الأساسية
                 </p>
 
             </div>
@@ -97,23 +103,32 @@
         </div>
 
 
+        <!-- رقم المريض -->
+
+        <div
+            style="
+                background:#f1f5f4;
+                padding:12px;
+                border-radius:10px;
+                margin-bottom:20px;
+            "
+        >
+
+            <strong>
+                رقم المريض:
+            </strong>
+
+            <span id="patientID">
+                جاري التحميل...
+            </span>
+
+        </div>
+
+
         <div class="form-grid">
 
 
-            <div class="input-group">
-
-                <label>
-                    رقم المريض
-                </label>
-
-                <input
-                    id="patientID"
-                    type="text"
-                    readonly
-                >
-
-            </div>
-
+            <!-- الاسم -->
 
             <div class="input-group">
 
@@ -122,13 +137,14 @@
                 </label>
 
                 <input
-                    id="patientName"
                     type="text"
-                    placeholder="اسم المريض"
+                    id="editName"
                 >
 
             </div>
 
+
+            <!-- الهاتف -->
 
             <div class="input-group">
 
@@ -137,13 +153,14 @@
                 </label>
 
                 <input
-                    id="patientPhone"
                     type="tel"
-                    placeholder="رقم الهاتف"
+                    id="editPhone"
                 >
 
             </div>
 
+
+            <!-- تاريخ الميلاد -->
 
             <div class="input-group">
 
@@ -152,25 +169,28 @@
                 </label>
 
                 <input
-                    id="patientBirthDate"
                     type="date"
+                    id="editBirthDate"
                 >
 
             </div>
 
 
+            <!-- الملاحظات -->
+
             <div class="input-group full">
 
                 <label>
-                    الملاحظات
+                    ملاحظات
                 </label>
 
                 <textarea
-                    id="patientNotes"
+                    id="editNotes"
                     placeholder="ملاحظات عن المريض..."
                 ></textarea>
 
             </div>
+
 
         </div>
 
@@ -184,15 +204,16 @@
 
         </button>
 
+
     </section>
 
 
 
-    <!-- =========================
+    <!-- ==================================================
          باركود المريض
-    ========================= -->
+    ================================================== -->
 
-    <section class="card barcode-card">
+    <section class="card">
 
         <div class="section-title">
 
@@ -207,7 +228,7 @@
                 </h2>
 
                 <p>
-                    استخدمه للبحث السريع عن المريض
+                    يمكن استخدامه للبحث السريع عن الملف
                 </p>
 
             </div>
@@ -215,29 +236,46 @@
         </div>
 
 
-        <div class="barcode-container">
+        <div
+            style="
+                text-align:center;
+                padding:20px;
+            "
+        >
 
-            <svg id="patientBarcode"></svg>
+            <svg
+                id="patientBarcode"
+            ></svg>
+
+
+            <div
+                id="barcodeNumber"
+                style="
+                    margin-top:10px;
+                    font-weight:bold;
+                "
+            ></div>
 
         </div>
 
 
         <button
             class="primary-button"
-            onclick="printBarcode()"
+            onclick="printPatientBarcode()"
         >
 
             🖨️ طباعة الباركود
 
         </button>
 
+
     </section>
 
 
 
-    <!-- =========================
+    <!-- ==================================================
          إضافة دواء
-    ========================= -->
+    ================================================== -->
 
     <section class="card">
 
@@ -254,7 +292,7 @@
                 </h2>
 
                 <p>
-                    تسجيل الدواء وموعد المتابعة
+                    تسجيل الدواء والعلاج الخاص بالمريض
                 </p>
 
             </div>
@@ -265,6 +303,8 @@
         <div class="form-grid">
 
 
+            <!-- اسم الدواء -->
+
             <div class="input-group">
 
                 <label>
@@ -272,13 +312,15 @@
                 </label>
 
                 <input
-                    id="medicineName"
                     type="text"
-                    placeholder="مثال: Metformin 500mg"
+                    id="medicineName"
+                    placeholder="مثال: Metformin 500 mg"
                 >
 
             </div>
 
+
+            <!-- الجرعة -->
 
             <div class="input-group">
 
@@ -287,29 +329,33 @@
                 </label>
 
                 <input
-                    id="medicineDose"
                     type="text"
+                    id="medicineDose"
                     placeholder="مثال: حبة واحدة"
                 >
 
             </div>
 
 
+            <!-- مرات الاستخدام -->
+
             <div class="input-group">
 
                 <label>
-                    عدد مرات الاستخدام يومياً
+                    عدد مرات الاستخدام يوميًا
                 </label>
 
                 <input
-                    id="medicineTimes"
                     type="number"
+                    id="medicineTimes"
                     min="1"
                     placeholder="مثال: 2"
                 >
 
             </div>
 
+
+            <!-- الكمية -->
 
             <div class="input-group">
 
@@ -318,14 +364,16 @@
                 </label>
 
                 <input
-                    id="medicineQuantity"
                     type="number"
-                    min="1"
-                    placeholder="مثال: 60"
+                    id="medicineQuantity"
+                    min="0"
+                    placeholder="مثال: 30"
                 >
 
             </div>
 
+
+            <!-- تاريخ الصرف -->
 
             <div class="input-group">
 
@@ -334,40 +382,26 @@
                 </label>
 
                 <input
-                    id="dispenseDate"
                     type="date"
+                    id="dispenseDate"
                 >
 
             </div>
 
+
+            <!-- عدد الأيام -->
 
             <div class="input-group">
 
                 <label>
-                    عدد أيام العلاج
+                    مدة العلاج بالأيام
                 </label>
 
                 <input
-                    id="medicineDays"
                     type="number"
+                    id="medicineDays"
                     min="1"
                     placeholder="مثال: 30"
-                    oninput="calculateFollowUp()"
-                >
-
-            </div>
-
-
-            <div class="input-group full">
-
-                <label>
-                    موعد المتابعة
-                </label>
-
-                <input
-                    id="followUpDate"
-                    type="date"
-                    readonly
                 >
 
             </div>
@@ -385,13 +419,14 @@
 
         </button>
 
+
     </section>
 
 
 
-    <!-- =========================
-         قائمة الأدوية
-    ========================= -->
+    <!-- ==================================================
+         أدوية المريض
+    ================================================== -->
 
     <section class="card">
 
@@ -408,7 +443,7 @@
                 </h2>
 
                 <p>
-                    الأدوية المسجلة لهذا المريض
+                    جميع الأدوية المسجلة لهذا المريض
                 </p>
 
             </div>
@@ -419,12 +454,11 @@
         <div id="medicinesList">
 
             <div class="no-result">
-
-                جارٍ تحميل الأدوية...
-
+                جاري تحميل الأدوية...
             </div>
 
         </div>
+
 
     </section>
 
@@ -436,17 +470,17 @@
 <script>
 
 
-/* =========================================
-   رابط Google Apps Script الصحيح
-========================================= */
+/* =====================================================
+   رابط Google Apps Script
+===================================================== */
 
 const API_URL =
-"https://script.google.com/macros/s/AKfycbxpciZPGC7wvRK-0hAYiZP1PETQh4m5hnWtgHGvCk56roAOtCPcGCR_pWhhek2iSfKB/exec";
+"https://script.google.com/macros/s/AKfycbzkvBi5jiox12ObEG8RKoWgJM3hJrp1djQQpeopzKkrTmPAZvqdZUoUzT82etTZ11UG/exec";
 
 
-/* =========================================
-   قراءة رقم المريض من الرابط
-========================================= */
+/* =====================================================
+   رقم المريض من الرابط
+===================================================== */
 
 const urlParams =
     new URLSearchParams(
@@ -454,19 +488,23 @@ const urlParams =
     );
 
 
-const patientID =
+const patientId =
     urlParams.get("id");
 
 
-/* =========================================
+let currentPatient = null;
+
+
+/* =====================================================
    عند فتح الصفحة
-========================================= */
+===================================================== */
 
 document.addEventListener(
     "DOMContentLoaded",
     function () {
 
-        if (!patientID) {
+
+        if (!patientId) {
 
             alert(
                 "لم يتم تحديد رقم المريض."
@@ -477,13 +515,6 @@ document.addEventListener(
         }
 
 
-        document.getElementById(
-            "patientID"
-        ).value = patientID;
-
-
-        setToday();
-
         loadPatient();
 
         loadMedicines();
@@ -492,20 +523,21 @@ document.addEventListener(
 );
 
 
-/* =========================================
-   تحميل بيانات المريض
-========================================= */
+/* =====================================================
+   جلب بيانات المريض
+===================================================== */
 
 async function loadPatient() {
 
     try {
+
 
         const response =
             await fetch(
                 API_URL +
                 "?action=patient&id=" +
                 encodeURIComponent(
-                    patientID
+                    patientId
                 )
             );
 
@@ -524,7 +556,7 @@ async function loadPatient() {
 
             alert(
                 data.message ||
-                "تعذر العثور على المريض."
+                "لم يتم العثور على المريض."
             );
 
             return;
@@ -532,82 +564,62 @@ async function loadPatient() {
         }
 
 
-        const patient =
+        currentPatient =
             data.patient;
 
 
+        /* ---------------------------------------------
+           عرض البيانات
+        --------------------------------------------- */
+
         document.getElementById(
             "patientID"
-        ).value =
-            patient.ID || "";
+        ).textContent =
+            currentPatient.ID || "";
 
 
         document.getElementById(
-            "patientName"
+            "editName"
         ).value =
-            patient.Name || "";
+            currentPatient.Name || "";
 
 
         document.getElementById(
-            "patientPhone"
+            "editPhone"
         ).value =
-            patient.Phone || "";
+            currentPatient.Phone || "";
 
 
         document.getElementById(
-            "patientBirthDate"
+            "editBirthDate"
         ).value =
-            formatDateForInput(
-                patient.BirthDate
+            formatDate(
+                currentPatient.BirthDate
             );
 
 
         document.getElementById(
-            "patientNotes"
+            "editNotes"
         ).value =
-            patient.Notes || "";
+            currentPatient.Notes || "";
 
 
-        /*
-        إنشاء باركود المريض
-        */
+        /* ---------------------------------------------
+           إنشاء الباركود
+        --------------------------------------------- */
 
-        JsBarcode(
-            "#patientBarcode",
-            String(patient.ID),
-            {
-
-                format: "CODE128",
-
-                width: 2,
-
-                height: 80,
-
-                displayValue: true,
-
-                fontSize: 18,
-
-                margin: 10
-
-            }
+        createBarcode(
+            currentPatient.ID
         );
-
-
-        document.title =
-            "ملف المريض - " +
-            (patient.Name || "");
 
 
     } catch (error) {
 
-        console.error(
-            "خطأ:",
-            error
-        );
+        console.error(error);
 
 
         alert(
-            "تعذر الاتصال بقاعدة بيانات المرضى."
+            "❌ تعذر الاتصال بقاعدة بيانات المرضى."
         );
 
     }
@@ -615,34 +627,132 @@ async function loadPatient() {
 }
 
 
-/* =========================================
+/* =====================================================
+   تنسيق التاريخ
+===================================================== */
+
+function formatDate(value) {
+
+    if (!value) {
+
+        return "";
+
+    }
+
+
+    const date =
+        new Date(value);
+
+
+    if (isNaN(date.getTime())) {
+
+        return String(value)
+            .substring(0, 10);
+
+    }
+
+
+    const year =
+        date.getFullYear();
+
+
+    const month =
+        String(
+            date.getMonth() + 1
+        ).padStart(2, "0");
+
+
+    const day =
+        String(
+            date.getDate()
+        ).padStart(2, "0");
+
+
+    return (
+        year +
+        "-" +
+        month +
+        "-" +
+        day
+    );
+
+}
+
+
+/* =====================================================
+   إنشاء باركود
+===================================================== */
+
+function createBarcode(id) {
+
+
+    if (
+        typeof JsBarcode ===
+        "undefined"
+    ) {
+
+        return;
+
+    }
+
+
+    JsBarcode(
+        "#patientBarcode",
+        id,
+        {
+
+            format: "CODE128",
+
+            displayValue: true,
+
+            fontSize: 18,
+
+            height: 90,
+
+            width: 2,
+
+            margin: 20
+
+        }
+    );
+
+
+    document.getElementById(
+        "barcodeNumber"
+    ).textContent =
+        id;
+
+}
+
+
+/* =====================================================
    تعديل بيانات المريض
-========================================= */
+===================================================== */
 
 async function updatePatient() {
 
 
     const name =
         document.getElementById(
-            "patientName"
+            "editName"
         ).value.trim();
 
 
     const phone =
         document.getElementById(
-            "patientPhone"
+            "editPhone"
         ).value.trim();
 
 
     const birthDate =
         document.getElementById(
-            "patientBirthDate"
+            "editBirthDate"
         ).value;
 
 
     const notes =
         document.getElementById(
-            "patientNotes"
+            "editNotes"
         ).value.trim();
 
 
@@ -657,40 +767,47 @@ async function updatePatient() {
     }
 
 
+    if (!phone) {
+
+        alert(
+            "يرجى إدخال رقم الهاتف."
+        );
+
+        return;
+
+    }
+
+
     try {
 
 
-        const response =
-            await fetch(
-                API_URL,
-                {
-
-                    method: "POST",
-
-                    body: JSON.stringify({
-
-                        action:
-                            "updatePatient",
-
-                        id:
-                            patientID,
-
-                        name:
-                            name,
-
-                        phone:
-                            phone,
-
-                        birthDate:
-                            birthDate,
-
-                        notes:
-                            notes
-
-                    })
-
-                }
+        const url =
+            API_URL +
+            "?action=updatePatient" +
+            "&id=" +
+            encodeURIComponent(
+                patientId
+            ) +
+            "&name=" +
+            encodeURIComponent(
+                name
+            ) +
+            "&phone=" +
+            encodeURIComponent(
+                phone
+            ) +
+            "&birthDate=" +
+            encodeURIComponent(
+                birthDate
+            ) +
+            "&notes=" +
+            encodeURIComponent(
+                notes
             );
+
+
+        const response =
+            await fetch(url);
 
 
         const data =
@@ -706,8 +823,11 @@ async function updatePatient() {
         if (!data.success) {
 
             alert(
-                data.message ||
-                "لم يتم حفظ التعديل."
+                "❌ " +
+                (
+                    data.message ||
+                    "لم يتم التعديل."
+                )
             );
 
             return;
@@ -716,19 +836,20 @@ async function updatePatient() {
 
 
         alert(
-            "✅ تم حفظ تعديلات المريض بنجاح."
+            "✅ تم تحديث بيانات المريض بنجاح"
         );
+
+
+        loadPatient();
 
 
     } catch (error) {
 
-        console.error(
-            error
-        );
+        console.error(error);
 
 
         alert(
-            "تعذر الاتصال بقاعدة البيانات."
+            "❌ تعذر تحديث بيانات المريض."
         );
 
     }
@@ -736,127 +857,9 @@ async function updatePatient() {
 }
 
 
-/* =========================================
-   وضع تاريخ اليوم
-========================================= */
-
-function setToday() {
-
-    const today =
-        new Date();
-
-
-    const year =
-        today.getFullYear();
-
-
-    const month =
-        String(
-            today.getMonth() + 1
-        ).padStart(
-            2,
-            "0"
-        );
-
-
-    const day =
-        String(
-            today.getDate()
-        ).padStart(
-            2,
-            "0"
-        );
-
-
-    document.getElementById(
-        "dispenseDate"
-    ).value =
-        `${year}-${month}-${day}`;
-
-}
-
-
-/* =========================================
-   حساب موعد المتابعة
-========================================= */
-
-function calculateFollowUp() {
-
-
-    const dispenseDate =
-        document.getElementById(
-            "dispenseDate"
-        ).value;
-
-
-    const days =
-        Number(
-            document.getElementById(
-                "medicineDays"
-            ).value
-        );
-
-
-    if (
-        !dispenseDate ||
-        !days
-    ) {
-
-        document.getElementById(
-            "followUpDate"
-        ).value = "";
-
-        return;
-
-    }
-
-
-    const date =
-        new Date(
-            dispenseDate +
-            "T00:00:00"
-        );
-
-
-    date.setDate(
-        date.getDate() +
-        days
-    );
-
-
-    const year =
-        date.getFullYear();
-
-
-    const month =
-        String(
-            date.getMonth() + 1
-        ).padStart(
-            2,
-            "0"
-        );
-
-
-    const day =
-        String(
-            date.getDate()
-        ).padStart(
-            2,
-            "0"
-        );
-
-
-    document.getElementById(
-        "followUpDate"
-    ).value =
-        `${year}-${month}-${day}`;
-
-}
-
-
-/* =========================================
+/* =====================================================
    إضافة دواء
-========================================= */
+===================================================== */
 
 async function addMedicine() {
 
@@ -911,43 +914,41 @@ async function addMedicine() {
     try {
 
 
-        const response =
-            await fetch(
-                API_URL,
-                {
-
-                    method: "POST",
-
-                    body: JSON.stringify({
-
-                        action:
-                            "addMedicine",
-
-                        patientId:
-                            patientID,
-
-                        medicineName:
-                            medicineName,
-
-                        dose:
-                            dose,
-
-                        timesPerDay:
-                            timesPerDay,
-
-                        quantity:
-                            quantity,
-
-                        dispenseDate:
-                            dispenseDate,
-
-                        days:
-                            days
-
-                    })
-
-                }
+        const url =
+            API_URL +
+            "?action=addMedicine" +
+            "&patientId=" +
+            encodeURIComponent(
+                patientId
+            ) +
+            "&medicineName=" +
+            encodeURIComponent(
+                medicineName
+            ) +
+            "&dose=" +
+            encodeURIComponent(
+                dose
+            ) +
+            "&timesPerDay=" +
+            encodeURIComponent(
+                timesPerDay
+            ) +
+            "&quantity=" +
+            encodeURIComponent(
+                quantity
+            ) +
+            "&dispenseDate=" +
+            encodeURIComponent(
+                dispenseDate
+            ) +
+            "&days=" +
+            encodeURIComponent(
+                days
             );
+
+
+        const response =
+            await fetch(url);
 
 
         const data =
@@ -963,8 +964,11 @@ async function addMedicine() {
         if (!data.success) {
 
             alert(
-                data.message ||
-                "لم تتم إضافة الدواء."
+                "❌ " +
+                (
+                    data.message ||
+                    "لم تتم إضافة الدواء."
+                )
             );
 
             return;
@@ -973,13 +977,13 @@ async function addMedicine() {
 
 
         alert(
-            "✅ تمت إضافة الدواء بنجاح."
+            "✅ تمت إضافة الدواء بنجاح"
         );
 
 
-        /*
-        تنظيف الحقول
-        */
+        /* ---------------------------------------------
+           مسح الحقول
+        --------------------------------------------- */
 
         document.getElementById(
             "medicineName"
@@ -1006,27 +1010,20 @@ async function addMedicine() {
         ).value = "";
 
 
-        document.getElementById(
-            "followUpDate"
-        ).value = "";
-
-
-        /*
-        إعادة تحميل الأدوية
-        */
+        /* ---------------------------------------------
+           إعادة تحميل الأدوية
+        --------------------------------------------- */
 
         loadMedicines();
 
 
     } catch (error) {
 
-        console.error(
-            error
-        );
+        console.error(error);
 
 
         alert(
-            "تعذر الاتصال بقاعدة البيانات."
+            "❌ تعذر إضافة الدواء."
         );
 
     }
@@ -1034,17 +1031,11 @@ async function addMedicine() {
 }
 
 
-/* =========================================
-   تحميل أدوية المريض
-========================================= */
+/* =====================================================
+   جلب أدوية المريض
+===================================================== */
 
 async function loadMedicines() {
-
-
-    const container =
-        document.getElementById(
-            "medicinesList"
-        );
 
 
     try {
@@ -1055,153 +1046,36 @@ async function loadMedicines() {
                 API_URL +
                 "?action=medicines&patientId=" +
                 encodeURIComponent(
-                    patientID
+                    patientId
                 )
             );
 
 
-        const medicines =
+        const data =
             await response.json();
 
 
         console.log(
             "الأدوية:",
-            medicines
+            data
         );
 
 
-        if (
-            !Array.isArray(
-                medicines
-            )
-        ) {
-
-            container.innerHTML = `
-
-                <div class="no-result">
-
-                    لا توجد أدوية مسجلة.
-
-                </div>
-
-            `;
-
-            return;
-
-        }
-
-
-        if (
-            medicines.length === 0
-        ) {
-
-            container.innerHTML = `
-
-                <div class="no-result">
-
-                    💊 لا توجد أدوية مسجلة لهذا المريض.
-
-                </div>
-
-            `;
-
-            return;
-
-        }
-
-
-        container.innerHTML =
-            medicines.map(
-                function (medicine) {
-
-                    return `
-
-                        <div class="patient-result">
-
-                            <div class="patient-info">
-
-                                <strong>
-
-                                    💊
-                                    ${escapeHTML(
-                                        medicine.MedicineName
-                                    )}
-
-                                </strong>
-
-
-                                <p>
-
-                                    الجرعة:
-                                    ${escapeHTML(
-                                        medicine.Dose ||
-                                        "غير محددة"
-                                    )}
-
-                                </p>
-
-
-                                <p>
-
-                                    الاستخدام:
-                                    ${escapeHTML(
-                                        medicine.TimesPerDay ||
-                                        "غير محدد"
-                                    )}
-                                    مرة يومياً
-
-                                </p>
-
-
-                                <p>
-
-                                    الكمية:
-                                    ${escapeHTML(
-                                        medicine.Quantity ||
-                                        "غير محددة"
-                                    )}
-
-                                </p>
-
-
-                                <p>
-
-                                    تاريخ الصرف:
-                                    ${formatDisplayDate(
-                                        medicine.DispenseDate
-                                    )}
-
-                                </p>
-
-
-                                <p>
-
-                                    موعد المتابعة:
-                                    ${formatDisplayDate(
-                                        medicine.FollowUpDate
-                                    )}
-
-                                </p>
-
-                            </div>
-
-                        </div>
-
-                    `;
-
-                }
-            )
-            .join("");
+        displayMedicines(
+            Array.isArray(data)
+                ? data
+                : []
+        );
 
 
     } catch (error) {
 
-        console.error(
-            error
-        );
+        console.error(error);
 
 
-        container.innerHTML = `
+        document.getElementById(
+            "medicinesList"
+        ).innerHTML = `
 
             <div class="no-result">
 
@@ -1216,29 +1090,177 @@ async function loadMedicines() {
 }
 
 
-/* =========================================
-   طباعة باركود المريض
-========================================= */
+/* =====================================================
+   عرض الأدوية
+===================================================== */
 
-function printBarcode() {
+function displayMedicines(
+    medicines
+) {
+
+
+    const container =
+        document.getElementById(
+            "medicinesList"
+        );
+
+
+    if (
+        !medicines ||
+        medicines.length === 0
+    ) {
+
+
+        container.innerHTML = `
+
+            <div class="no-result">
+
+                💊 لا توجد أدوية مسجلة لهذا المريض.
+
+            </div>
+
+        `;
+
+
+        return;
+
+    }
+
+
+    container.innerHTML =
+        medicines.map(
+            function (medicine) {
+
+
+                return `
+
+                    <div
+                        class="patient-result"
+                        style="
+                            display:block;
+                            margin-bottom:15px;
+                        "
+                    >
+
+                        <h3>
+                            💊
+                            ${escapeHTML(
+                                medicine.MedicineName
+                            )}
+                        </h3>
+
+
+                        <p>
+                            <strong>
+                                الجرعة:
+                            </strong>
+
+                            ${escapeHTML(
+                                medicine.Dose
+                            )}
+                        </p>
+
+
+                        <p>
+                            <strong>
+                                مرات الاستخدام:
+                            </strong>
+
+                            ${escapeHTML(
+                                medicine.TimesPerDay
+                            )}
+                            مرة يوميًا
+                        </p>
+
+
+                        <p>
+                            <strong>
+                                الكمية:
+                            </strong>
+
+                            ${escapeHTML(
+                                medicine.Quantity
+                            )}
+                        </p>
+
+
+                        <p>
+                            <strong>
+                                تاريخ الصرف:
+                            </strong>
+
+                            ${escapeHTML(
+                                formatDate(
+                                    medicine.DispenseDate
+                                )
+                            )}
+                        </p>
+
+
+                        <p>
+                            <strong>
+                                مدة العلاج:
+                            </strong>
+
+                            ${escapeHTML(
+                                medicine.Days
+                            )}
+                            يوم
+                        </p>
+
+
+                        <p>
+                            <strong>
+                                📅 تاريخ المتابعة:
+                            </strong>
+
+                            ${escapeHTML(
+                                formatDate(
+                                    medicine.FollowUpDate
+                                )
+                            )}
+                        </p>
+
+                    </div>
+
+                `;
+
+            }
+        ).join("");
+
+}
+
+
+/* =====================================================
+   طباعة الباركود
+===================================================== */
+
+function printPatientBarcode() {
 
 
     const barcode =
         document.getElementById(
             "patientBarcode"
-        ).outerHTML;
-
-
-    const name =
-        document.getElementById(
-            "patientName"
-        ).value;
+        );
 
 
     const id =
-        document.getElementById(
-            "patientID"
-        ).value;
+        currentPatient
+            ? currentPatient.ID
+            : patientId;
+
+
+    const name =
+        currentPatient
+            ? currentPatient.Name
+            : "";
+
+
+    if (!barcode) {
+
+        return;
+
+    }
 
 
     const printWindow =
@@ -1251,7 +1273,7 @@ function printBarcode() {
     if (!printWindow) {
 
         alert(
-            "يرجى السماح بالنوافذ المنبثقة للطباعة."
+            "يرجى السماح بفتح نافذة الطباعة."
         );
 
         return;
@@ -1280,24 +1302,23 @@ function printBarcode() {
 
                 body {
 
-                    text-align: center;
+                    text-align:center;
 
-                    font-family: Arial;
+                    font-family:Arial;
 
-                    padding: 30px;
+                    padding:40px;
 
                 }
 
                 svg {
 
-                    max-width: 350px;
+                    max-width:100%;
 
                 }
 
             </style>
 
         </head>
-
 
         <body>
 
@@ -1310,20 +1331,18 @@ function printBarcode() {
                 ${escapeHTML(id)}
             </p>
 
-            ${barcode}
-
+            ${barcode.outerHTML}
 
             <script>
 
                 window.onload =
-                function () {
+                    function () {
 
-                    window.print();
+                        window.print();
 
-                };
+                    };
 
             <\/script>
-
 
         </body>
 
@@ -1337,9 +1356,9 @@ function printBarcode() {
 }
 
 
-/* =========================================
-   العودة إلى الصفحة الرئيسية
-========================================= */
+/* =====================================================
+   العودة
+===================================================== */
 
 function goBack() {
 
@@ -1349,160 +1368,9 @@ function goBack() {
 }
 
 
-/* =========================================
-   التاريخ إلى input date
-========================================= */
-
-function formatDateForInput(value) {
-
-
-    if (!value) {
-
-        return "";
-
-    }
-
-
-    /*
-    إذا كان التاريخ أصلاً
-    بالشكل YYYY-MM-DD
-    */
-
-    const stringValue =
-        String(value);
-
-
-    const match =
-        stringValue.match(
-            /^(\d{4})-(\d{2})-(\d{2})/
-        );
-
-
-    if (match) {
-
-        return (
-            match[1] +
-            "-" +
-            match[2] +
-            "-" +
-            match[3]
-        );
-
-    }
-
-
-    const date =
-        new Date(value);
-
-
-    if (
-        isNaN(
-            date.getTime()
-        )
-    ) {
-
-        return "";
-
-    }
-
-
-    return (
-        date.getFullYear() +
-        "-" +
-        String(
-            date.getMonth() + 1
-        ).padStart(
-            2,
-            "0"
-        ) +
-        "-" +
-        String(
-            date.getDate()
-        ).padStart(
-            2,
-            "0"
-        )
-    );
-
-}
-
-
-/* =========================================
-   عرض التاريخ
-========================================= */
-
-function formatDisplayDate(value) {
-
-
-    if (!value) {
-
-        return "غير محدد";
-
-    }
-
-
-    const stringValue =
-        String(value);
-
-
-    const match =
-        stringValue.match(
-            /^(\d{4})-(\d{2})-(\d{2})/
-        );
-
-
-    if (match) {
-
-        return (
-            match[3] +
-            "/" +
-            match[2] +
-            "/" +
-            match[1]
-        );
-
-    }
-
-
-    const date =
-        new Date(value);
-
-
-    if (
-        isNaN(
-            date.getTime()
-        )
-    ) {
-
-        return "غير محدد";
-
-    }
-
-
-    return (
-        String(
-            date.getDate()
-        ).padStart(
-            2,
-            "0"
-        ) +
-        "/" +
-        String(
-            date.getMonth() + 1
-        ).padStart(
-            2,
-            "0"
-        ) +
-        "/" +
-        date.getFullYear()
-    );
-
-}
-
-
-/* =========================================
+/* =====================================================
    حماية النصوص
-========================================= */
+===================================================== */
 
 function escapeHTML(value) {
 
@@ -1510,33 +1378,32 @@ function escapeHTML(value) {
         value || ""
     )
 
-    .replace(
-        /&/g,
-        "&amp;"
-    )
+        .replace(
+            /&/g,
+            "&amp;"
+        )
 
-    .replace(
-        /</g,
-        "&lt;"
-    )
+        .replace(
+            /</g,
+            "&lt;"
+        )
 
-    .replace(
-        />/g,
-        "&gt;"
-    )
+        .replace(
+            />/g,
+            "&gt;"
+        )
 
-    .replace(
-        /"/g,
-        "&quot;"
-    )
+        .replace(
+            /"/g,
+            "&quot;"
+        )
 
-    .replace(
-        /'/g,
-        "&#039;"
-    );
+        .replace(
+            /'/g,
+            "&#039;"
+        );
 
 }
-
 
 </script>
 
